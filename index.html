@@ -59,8 +59,8 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:10px;
-      padding:10px 10px;
+      gap:8px;
+      padding:8px 10px;
       border-radius: var(--r-lg);
       background: rgba(255,255,255,.85);
       backdrop-filter: blur(10px);
@@ -76,10 +76,10 @@
     .logo{
       font-weight:900;
       letter-spacing:.6px;
-      font-size:16px;
+      font-size:15px;
       line-height:1;
-      padding:8px 10px;
-      border-radius: 12px;
+      padding:7px 9px;
+      border-radius: 11px;
       background: linear-gradient(180deg, rgba(15,23,42,.06), rgba(15,23,42,.02));
       border:1px solid rgba(15,23,42,.08);
       white-space:nowrap;
@@ -109,9 +109,9 @@
       border:1px solid rgba(15,23,42,.12);
       background: #fff;
       border-radius: 12px;
-      padding:7px 10px;
+      padding:6px 9px;
       font-weight:800;
-      font-size:12px;
+      font-size:11.5px;
       cursor:pointer;
       box-shadow: 0 4px 16px rgba(15,23,42,.06);
       display:flex;
@@ -128,16 +128,16 @@
       background: linear-gradient(180deg, rgba(52,168,83,.12), rgba(52,168,83,.05));
     }
     .btn.icon{
-      padding:7px 9px;
-      width:36px;
+      padding:6px 8px;
+      width:34px;
       justify-content:center;
     }
 
     .difficulty{
       display:flex;
       align-items:center;
-      gap:8px;
-      padding:7px 10px;
+      gap:6px;
+      padding:6px 8px;
       border-radius: 12px;
       border:1px solid rgba(15,23,42,.12);
       background:#fff;
@@ -148,9 +148,14 @@
       user-select:none;
       white-space:nowrap;
     }
-    .difficulty input[type="range"]{
-      width:90px;
-      accent-color:#111;
+    .difficulty select{
+      border:1px solid rgba(15,23,42,.14);
+      border-radius:10px;
+      padding:5px 8px 5px 10px;
+      font:inherit;
+      font-weight:900;
+      color:#0b0f1a;
+      background:#f8fafc;
     }
 
     .main{
@@ -167,7 +172,7 @@
       background: rgba(255,255,255,.9);
       border:1px solid rgba(15,23,42,.08);
       box-shadow: var(--shadow);
-      padding:10px;
+      padding:8px;
       min-height:0;
     }
     .panelHead{
@@ -192,7 +197,7 @@
       border:2px solid #111;
       border-radius: 16px;
       background:#fff;
-      padding:8px;
+      padding:6px;
       min-height:0;
       overflow:hidden; /* default: sin scroll */
     }
@@ -211,13 +216,14 @@
       border-radius: 14px;
       background:#fff;
       padding:8px 8px;
-      min-height:74px;
+      min-height:68px;
       display:flex;
       flex-direction:column;
       justify-content:space-between;
       gap:6px;
       position:relative;
       user-select:none;
+      touch-action:none;
     }
 
     .cellTop{
@@ -228,7 +234,7 @@
     }
     .target{
       font-weight:1000;
-      font-size:18px;
+      font-size:17px;
       line-height:1;
     }
 
@@ -302,14 +308,15 @@
       border:2px solid #111;
       border-radius: 14px;
       background:#fff;
-      padding:8px;
+      padding:7px;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:8px;
       user-select:none;
       position:relative;
-      min-height:58px;
+      min-height:52px;
+      touch-action:none;
     }
     .pairSlots{
       display:flex;
@@ -319,7 +326,7 @@
       min-width:0;
     }
     .pairSlot{
-      width:38px; height:38px;
+      width:34px; height:34px;
       border-radius: 12px;
       background: #fff;
       border:1px dashed rgba(15,23,42,.20);
@@ -329,6 +336,7 @@
       color:#111;
       overflow:hidden;
       position:relative;
+      touch-action:none;
     }
     .pairSlot.filled{
       border-style:solid;
@@ -383,12 +391,13 @@
       border:2px solid #111;
       border-radius: 14px;
       background:#fff;
-      min-height:44px;
+      min-height:40px;
       display:grid;
       place-items:center;
       font-weight:1000;
       user-select:none;
       position:relative;
+      touch-action:none;
     }
     .numTok.used{
       opacity:.38;
@@ -494,15 +503,33 @@
     }
 
     .footer{
-      padding:8px 10px;
+      padding:10px 12px;
       border-radius: var(--r-lg);
-      background: rgba(255,255,255,.85);
+      background: linear-gradient(135deg, rgba(15,23,42,.04), rgba(15,23,42,.02));
       border:1px solid rgba(15,23,42,.08);
       box-shadow: var(--shadow);
       font-size:12px;
-      color: rgba(15,23,42,.72);
+      color: rgba(15,23,42,.78);
       text-align:center;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
     }
+    .footer .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:12px;
+      background:#0b0f1a;
+      color:#f8fafc;
+      text-decoration:none;
+      box-shadow: 0 8px 20px rgba(15,23,42,.18);
+      font-weight:900;
+    }
+    .footer .pill span{ opacity:.9; font-weight:700; }
 
     /* Confetti canvas */
     #confetti{
@@ -531,12 +558,10 @@
         <button class="btn primary" id="btnNew">NUEVO</button>
         <button class="btn" id="btnReveal">SOLUCIÓN</button>
         <button class="btn icon" id="btnHelp" title="Help">?</button>
-        <button class="btn icon" id="btnLang" title="Language">🌐</button>
 
         <div class="difficulty" title="Dificultad">
-          <span id="diffLabel">DIF</span>
-          <input id="diffRange" type="range" min="0" max="12" step="1" value="5">
-          <span id="diffVal">5</span>
+          <label for="diffSelect" id="diffLabel">DIF</label>
+          <select id="diffSelect" aria-label="Difficulty"></select>
         </div>
       </div>
     </div>
@@ -577,9 +602,7 @@
       </div>
     </div>
 
-    <div class="footer" id="footer">
-      Si te gustó comprame un modelito 3d: <b>PINGÜÉ3D</b> · <b>Mateo</b>
-    </div>
+    <div class="footer" id="footer"></div>
   </div>
 
   <div class="ghost" id="ghost"></div>
@@ -642,7 +665,7 @@
         toastStripOrder:"La pool debe estar ordenada (ascendente).",
         toastMissing:"Falta completar cosas.",
         toastWin:"¡Perfecto!",
-        footer:`Si te gustó comprame un modelito 3d: <a href="https://cults3d.com/es/usuarios/PINGUE3D/modelos-3d"> <b>PINGUE3D</b> </a> · <b>Mateo</b>`
+        footer:`<span>Si te gustó, visitá mi tienda 3D</span><a class="pill" href="https://cults3d.com/es/usuarios/PINGUE3D/modelos-3d" target="_blank" rel="noreferrer noopener">Cults · <span>PINGÜÉ3D</span></a><span><b>Mateo</b></span>`
       },
       en: {
         new:"NEW",
@@ -680,7 +703,7 @@
         toastStripOrder:"The pool must be ascending.",
         toastMissing:"Something is missing.",
         toastWin:"Perfect!",
-        footer:`If you liked it, buy me a 3D model: <b>PINGÜÉ3D</b> · <b>Mateo</b>`
+        footer:`<span>If you enjoyed it, check my 3D shop</span><a class="pill" href="https://cults3d.com/en/users/PINGUE3D/3d-models" target="_blank" rel="noreferrer noopener">Cults · <span>PINGÜÉ3D</span></a><span><b>Mateo</b></span>`
       }
     };
 
@@ -705,10 +728,8 @@
     const btnNew = document.getElementById("btnNew");
     const btnReveal = document.getElementById("btnReveal");
     const btnHelp = document.getElementById("btnHelp");
-    const btnLang = document.getElementById("btnLang");
 
-    const diffRange = document.getElementById("diffRange");
-    const diffVal = document.getElementById("diffVal");
+    const diffSelect = document.getElementById("diffSelect");
     const diffLabel = document.getElementById("diffLabel");
 
     const back = document.getElementById("back");
@@ -733,6 +754,13 @@
       // hidden solution (solo para mostrar cuando reveal ON)
       solution: { fullStrip:[], solPairs:[], cells:[] }
     };
+
+    for(let i=0;i<=12;i++){
+      const opt = document.createElement("option");
+      opt.value = String(i);
+      opt.textContent = String(i);
+      diffSelect.appendChild(opt);
+    }
 
     function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
     function shuffle(arr){
@@ -896,6 +924,7 @@
     }
 
     function applyTexts(){
+      document.documentElement.setAttribute("lang", LANG);
       btnNew.textContent = t("new");
       btnReveal.textContent = t("sol");
       btnHelp.title = t("help");
@@ -910,6 +939,7 @@
 
       diffLabel.textContent = t("diff");
       document.querySelector(".difficulty").title = t("diffTip");
+      diffSelect.value = String(S.difficulty);
 
       footer.innerHTML = I18N[LANG].footer;
       numsHint.textContent = t("numsHint", S.difficulty);
@@ -1226,18 +1256,12 @@
     back.addEventListener("click", (e)=>{ if(e.target===back) closeModal(); });
     document.addEventListener("keydown",(e)=>{ if(e.key==="Escape") closeModal(); });
 
-    btnLang.addEventListener("click", ()=>{
-      LANG = (LANG==="es") ? "en" : "es";
-      renderAll();
-    });
-
     // Dificultad “al revés”: 0 = 0 huecos (más fácil)
-    diffRange.addEventListener("input", ()=>{
-      S.difficulty = parseInt(diffRange.value,10);
-      diffVal.textContent = String(S.difficulty);
+    diffSelect.addEventListener("input", ()=>{
+      S.difficulty = parseInt(diffSelect.value,10);
       numsHint.textContent = t("numsHint", S.difficulty);
     });
-    diffRange.addEventListener("change", ()=>{
+    diffSelect.addEventListener("change", ()=>{
       // al cambiar dificultad, generamos puzzle nuevo
       newGame();
     });
@@ -1269,6 +1293,10 @@
         if(v===null){ return; }
         if(stripTokenUsed(stripIdx)){ return; }
 
+        if(tok.setPointerCapture){
+          try{ tok.setPointerCapture(e.pointerId); }catch(err){}
+        }
+
         // Allow editing: if it's an input and user just taps, don't drag.
         // We'll only start drag if movement threshold is exceeded.
         const start = { ...point(e) };
@@ -1297,9 +1325,10 @@
           }
         }
 
-        function onUp(ev){
-          window.removeEventListener("pointermove", onMove, {passive:false});
-          window.removeEventListener("pointerup", onUp);
+        function endDrag(ev){
+          window.removeEventListener("pointermove", onMove);
+          window.removeEventListener("pointerup", endDrag);
+          window.removeEventListener("pointercancel", endDrag);
           if(drag){
             const p = point(ev);
             performDrop(p.x, p.y);
@@ -1308,7 +1337,8 @@
         }
 
         window.addEventListener("pointermove", onMove, {passive:false});
-        window.addEventListener("pointerup", onUp);
+        window.addEventListener("pointerup", endDrag);
+        window.addEventListener("pointercancel", endDrag);
       });
 
       // Desktop HTML5 drag (fallback)
@@ -1343,6 +1373,10 @@
       card.addEventListener("pointerdown",(e)=>{
         if(!cardReady(cardId)) return;
 
+        if(card.setPointerCapture){
+          try{ card.setPointerCapture(e.pointerId); }catch(err){}
+        }
+
         const start = { ...point(e) };
         let moved = false;
 
@@ -1363,9 +1397,10 @@
             ev.preventDefault();
           }
         }
-        function onUp(ev){
-          window.removeEventListener("pointermove", onMove, {passive:false});
-          window.removeEventListener("pointerup", onUp);
+        function endDrag(ev){
+          window.removeEventListener("pointermove", onMove);
+          window.removeEventListener("pointerup", endDrag);
+          window.removeEventListener("pointercancel", endDrag);
           if(drag){
             const p = point(ev);
             performDrop(p.x, p.y);
@@ -1374,7 +1409,8 @@
         }
 
         window.addEventListener("pointermove", onMove, {passive:false});
-        window.addEventListener("pointerup", onUp);
+        window.addEventListener("pointerup", endDrag);
+        window.addEventListener("pointercancel", endDrag);
       });
 
       // HTML5 fallback
@@ -1619,7 +1655,6 @@
     // =========================================================
     // Boot
     // =========================================================
-    diffVal.textContent = String(S.difficulty);
     newGame();
   </script>
 </body>
