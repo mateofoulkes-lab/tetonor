@@ -2,487 +2,506 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Tetonor (Simple + Avanzado)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Tetonor Mobile</title>
+
+  <!-- PWA (single-file-ish): manifest por data: URL -->
+  <link id="manifestLink" rel="manifest" href="">
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
   <style>
     :root{
-      --bg:#0b1220;
-      --ink:#eaf0ff;
-      --muted:#a9b7d6;
-      --line:rgba(255,255,255,.10);
-      --accent:#7c5cff;
-      --accent2:#2ee59d;
-      --warn:#ffcc66;
-      --bad:#ff4d6d;
-      --good:#35f28a;
-      --shadow: 0 12px 40px rgba(0,0,0,.35);
-      --radius:18px;
+      --bg:#ffffff;
+      --ink:#0b0f1a;
+      --muted:#667085;
+      --line:#111111;
+      --soft:#e6e8ee;
+
+      --chip:#f2f4f7;
+      --card:#ffffff;
+
+      --yellow:#f4b400;     /* + */
+      --green:#34a853;      /* × */
+      --gray:#cbd5e1;
+
+      --r-lg:18px;
+      --r:14px;
+      --r-sm:12px;
+
+      --shadow: 0 8px 28px rgba(15, 23, 42, .10);
     }
-    *{box-sizing:border-box}
+
+    *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+    html,body{ height:100%; }
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       background:
-        radial-gradient(1200px 700px at 10% 10%, rgba(124,92,255,.22), transparent 60%),
-        radial-gradient(1000px 600px at 90% 20%, rgba(46,229,157,.16), transparent 55%),
-        radial-gradient(900px 650px at 40% 95%, rgba(255,204,102,.10), transparent 60%),
-        var(--bg);
+        radial-gradient(1200px 700px at 20% -10%, rgba(52,168,83,.12), transparent 55%),
+        radial-gradient(1200px 700px at 80% -10%, rgba(244,180,0,.10), transparent 55%),
+        #fff;
       color:var(--ink);
-      min-height:100vh;
-      padding:22px;
     }
-    .wrap{ max-width:1180px; margin:0 auto; display:flex; flex-direction:column; gap:14px; }
+
+    /* Layout: todo entra en 100svh, sin scroll normal.
+       Cuando "Solución" está ON, habilitamos scroll en el área central para que no recorte. */
+    .app{
+      height:100svh;
+      display:flex;
+      flex-direction:column;
+      padding:10px;
+      gap:10px;
+    }
 
     .topbar{
-      display:flex; gap:12px; align-items:center; justify-content:space-between;
-      padding:14px 16px;
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 10px;
+      border-radius: var(--r-lg);
+      background: rgba(255,255,255,.85);
+      backdrop-filter: blur(10px);
       box-shadow: var(--shadow);
+      border:1px solid rgba(15,23,42,.08);
     }
-    .brand{ display:flex; flex-direction:column; gap:6px; }
-    .brand h1{
-      margin:0; font-size:18px; letter-spacing:.2px;
-      display:flex; align-items:center; gap:10px;
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
     }
-    .pill{
+    .logo{
+      font-weight:900;
+      letter-spacing:.6px;
+      font-size:16px;
+      line-height:1;
+      padding:8px 10px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(15,23,42,.06), rgba(15,23,42,.02));
+      border:1px solid rgba(15,23,42,.08);
+      white-space:nowrap;
+    }
+    .sub{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+    }
+    .sub .mini{
       font-size:12px;
       color:var(--muted);
-      border:1px solid var(--line);
-      padding:4px 10px;
-      border-radius:999px;
-      display:inline-flex;
-      gap:8px;
-      align-items:center;
-      background: rgba(255,255,255,.03);
-      width:fit-content;
-      flex-wrap:wrap;
-    }
-    .tabs{
-      display:flex; gap:10px; align-items:center;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      padding:6px;
-      border-radius: 999px;
-    }
-    .tab{
-      border:1px solid transparent;
-      background: transparent;
-      color: var(--muted);
-      padding:10px 14px;
-      border-radius: 999px;
-      cursor:pointer;
-      transition: background .2s ease, border-color .2s ease, color .2s ease;
-      font-weight:700;
-      user-select:none;
-    }
-    .tab.active{
-      color: var(--ink);
-      background: linear-gradient(180deg, rgba(124,92,255,.30), rgba(124,92,255,.14));
-      border-color: rgba(124,92,255,.35);
-    }
-
-    .app{
-      display:grid;
-      grid-template-columns: 1.25fr .75fr;
-      gap:18px;
-    }
-    @media (max-width: 980px){
-      body{ padding:14px; }
-      .app{ grid-template-columns:1fr; }
-      .topbar{ flex-direction:column; align-items:flex-start; gap:10px; }
-      .tabs{ width:100%; justify-content:space-between; }
-      .controls{ justify-content:flex-start; }
-    }
-
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      white-space:nowrap;
       overflow:hidden;
+      text-overflow:ellipsis;
     }
-    .header{
-      padding:16px 16px 10px 16px;
+    .rowBtns{
       display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
+      gap:6px;
+      align-items:center;
+      flex-wrap:nowrap;
     }
-    .title{ display:flex; flex-direction:column; gap:8px; }
-    .title h2{ margin:0; font-size:15px; letter-spacing:.2px; }
 
-    .controls{
-      display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;
-    }
-    button{
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.05);
-      color: var(--ink);
-      padding:10px 12px;
-      border-radius: 14px;
+    /* Botones superiores: “ligeramente más chicos” */
+    .btn{
+      border:1px solid rgba(15,23,42,.12);
+      background: #fff;
+      border-radius: 12px;
+      padding:7px 10px;
+      font-weight:800;
+      font-size:12px;
       cursor:pointer;
-      transition: transform .05s ease, background .2s ease, border-color .2s ease;
-      display:inline-flex;
+      box-shadow: 0 4px 16px rgba(15,23,42,.06);
+      display:flex;
+      align-items:center;
+      gap:6px;
+      user-select:none;
+    }
+    .btn:active{ transform: translateY(1px); }
+    .btn.primary{
+      background: linear-gradient(180deg, rgba(15,23,42,.06), rgba(15,23,42,.02));
+    }
+    .btn.toggleOn{
+      border-color: rgba(15,23,42,.20);
+      background: linear-gradient(180deg, rgba(52,168,83,.12), rgba(52,168,83,.05));
+    }
+    .btn.icon{
+      padding:7px 9px;
+      width:36px;
+      justify-content:center;
+    }
+
+    .difficulty{
+      display:flex;
       align-items:center;
       gap:8px;
+      padding:7px 10px;
+      border-radius: 12px;
+      border:1px solid rgba(15,23,42,.12);
+      background:#fff;
+      box-shadow: 0 4px 16px rgba(15,23,42,.06);
+      font-size:12px;
+      font-weight:900;
+      color: var(--muted);
       user-select:none;
-      font-weight:700;
+      white-space:nowrap;
     }
-    button:hover{ background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); }
-    button:active{ transform: translateY(1px); }
-    button.primary{
-      background: linear-gradient(180deg, rgba(124,92,255,.35), rgba(124,92,255,.18));
-      border-color: rgba(124,92,255,.45);
-    }
-    button.good{
-      background: linear-gradient(180deg, rgba(46,229,157,.22), rgba(46,229,157,.10));
-      border-color: rgba(46,229,157,.35);
-    }
-    button.bad{
-      background: linear-gradient(180deg, rgba(255,77,109,.22), rgba(255,77,109,.10));
-      border-color: rgba(255,77,109,.35);
+    .difficulty input[type="range"]{
+      width:90px;
+      accent-color:#111;
     }
 
-    .boardWrap{ padding:14px 16px 16px 16px; }
-    .boardFrame{
-      border-radius: 18px;
-      border: 2px solid rgba(255, 223, 102, .45);
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-      padding:14px;
+    .main{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      flex:1;
+      min-height:0;
+    }
+
+    /* Grid section */
+    .panel{
+      border-radius: var(--r-lg);
+      background: rgba(255,255,255,.9);
+      border:1px solid rgba(15,23,42,.08);
+      box-shadow: var(--shadow);
+      padding:10px;
+      min-height:0;
+    }
+    .panelHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:8px;
+    }
+    .panelHead .title{
+      font-weight:900;
+      font-size:13px;
+      color: rgba(15,23,42,.92);
+    }
+    .panelHead .progress{
+      font-size:12px;
+      color: var(--muted);
+      font-weight:800;
+    }
+
+    .gridWrap{
+      border:2px solid #111;
+      border-radius: 16px;
+      background:#fff;
+      padding:8px;
+      min-height:0;
+      overflow:hidden; /* default: sin scroll */
+    }
+    .gridWrap.scrollable{
+      overflow:auto; /* cuando solución ON, permitimos scroll y NO recortamos celdas */
     }
 
     .grid{
       display:grid;
       grid-template-columns: repeat(4, 1fr);
-      gap:10px;
-    }
-    @media (max-width: 520px){
-      .grid{ gap:8px; }
-      .boardFrame{ padding:10px; }
+      gap:8px;
     }
 
     .cell{
-      border-radius:16px;
-      border:1px solid var(--line);
-      background: rgba(0,0,0,.18);
-      min-height:96px;
-      padding:10px;
+      border:2px solid #111;
+      border-radius: 14px;
+      background:#fff;
+      padding:8px 8px;
+      min-height:74px;
       display:flex;
       flex-direction:column;
-      gap:10px;
-      transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
-      user-select:none;
+      justify-content:space-between;
+      gap:6px;
       position:relative;
-      overflow:hidden;
-    }
-    @media (max-width:520px){
-      .cell{ min-height:86px; padding:9px; }
-    }
-    .cell:hover{ border-color: rgba(255,255,255,.18); background: rgba(0,0,0,.22); }
-    .cell.dragover{ border-color: rgba(124,92,255,.65); box-shadow: 0 0 0 3px rgba(124,92,255,.22) inset; }
-
-    .cell.correct{
-      background: linear-gradient(180deg, rgba(46,229,157,.12), rgba(0,0,0,.18));
-      border-color: rgba(46,229,157,.25);
-    }
-    .cell.incorrect{
-      background: linear-gradient(180deg, rgba(255,77,109,.12), rgba(0,0,0,.18));
-      border-color: rgba(255,77,109,.25);
+      user-select:none;
     }
 
-    .topRow{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+    .cellTop{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:8px;
+    }
     .target{
-      font-size: clamp(18px, 3.1vw, 28px);
-      font-weight:900;
-      letter-spacing:.2px;
+      font-weight:1000;
+      font-size:18px;
       line-height:1;
     }
 
-    .opBadge{
-      width:30px;height:30px;
-      display:grid; place-items:center;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.04);
-      font-weight:900;
+    .opPill{
+      width:28px; height:28px;
+      border-radius: 10px;
+      display:grid;
+      place-items:center;
+      font-weight:1000;
+      font-size:14px;
+      border:1px solid rgba(15,23,42,.12);
+      background: var(--chip);
+      color:#111;
       flex:0 0 auto;
     }
-    .opBadge.mul{ border-color: rgba(46,229,157,.35); background: rgba(46,229,157,.08); color: var(--accent2); }
-    .opBadge.add{ border-color: rgba(255,204,102,.35); background: rgba(255,204,102,.08); color: var(--warn); }
-    .opBadge.none{ opacity:.75; }
-
-    .status{
-      margin-top:14px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      padding:12px 12px;
-      border-radius:16px;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.35;
+    .opPill.add{
+      background: rgba(244,180,0,.18);
+      border-color: rgba(244,180,0,.35);
+      color: #7a4b00;
     }
-    .status strong{ color:var(--ink); }
-    .ok{ color: var(--good); }
-    .err{ color: var(--bad); }
-
-    /* toast */
-    .toast{
-      position:fixed;
-      left:50%;
-      bottom:22px;
-      transform:translateX(-50%);
-      padding:10px 14px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background: rgba(15,26,46,.9);
-      box-shadow: var(--shadow);
-      color: var(--ink);
-      font-size:13px;
-      opacity:0;
-      pointer-events:none;
-      transition: opacity .18s ease, transform .18s ease;
-      z-index:50;
-    }
-    .toast.show{ opacity:1; transform:translateX(-50%) translateY(-4px); }
-
-    .chip{
-      width:36px;height:36px;
-      border-radius:13px;
-      display:grid; place-items:center;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.12);
-      letter-spacing:.2px;
-      font-weight:900;
-    }
-    .chip.small{
-      width:28px;
-      height:28px;
-      border-radius:11px;
-      font-size:13px;
+    .opPill.mul{
+      background: rgba(52,168,83,.16);
+      border-color: rgba(52,168,83,.32);
+      color: #0f5a2a;
     }
 
-    .marks{ display:flex; gap:8px; align-items:center; }
-    .mark{
-      width:22px;height:22px;
-      display:grid; place-items:center;
-      border-radius:9px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.04);
-      font-weight:900;
+    .expr{
       font-size:12px;
-    }
-    .mark.add{ border-color: rgba(255,204,102,.35); background: rgba(255,204,102,.08); color: var(--warn); }
-    .mark.mul{ border-color: rgba(46,229,157,.35); background: rgba(46,229,157,.08); color: var(--accent2); }
-    .mark.off{ opacity:.35; }
-    .mark.over{
-      box-shadow: 0 0 0 3px rgba(255,77,109,.22) inset;
-      border-color: rgba(255,77,109,.55);
-      color: var(--bad);
-      background: rgba(255,77,109,.10);
-    }
-
-    /* slots (simple) */
-    .slots2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-      padding-top:8px;
-      border-top:1px dashed rgba(255,255,255,.12);
-    }
-    .slot{
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.03);
-      min-height:40px;
+      color: rgba(15,23,42,.85);
+      font-weight:900;
+      padding:6px 8px;
+      border-radius: 12px;
+      background: rgba(15,23,42,.04);
+      border:1px dashed rgba(15,23,42,.14);
+      min-height:28px;
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:8px 10px;
-      gap:10px;
-      overflow:hidden;
-    }
-    .slot.dragover{
-      border-color: rgba(124,92,255,.65);
-      box-shadow: 0 0 0 3px rgba(124,92,255,.18) inset;
-    }
-
-    /* panel */
-    .panelWrap{ padding:14px 16px 16px 16px; display:flex; flex-direction:column; gap:12px; }
-    .section{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.10);
-      border-radius:16px;
-      padding:12px;
-    }
-    .sectionHead{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      margin-bottom:10px;
-    }
-    .sectionHead h3{
-      margin:0;
-      font-size:13px;
-      letter-spacing:.2px;
-      color: rgba(234,240,255,.95);
-    }
-    .mini{ font-size:12px; color: var(--muted); }
-
-    /* Advanced: strip pool */
-    .stripGrid{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:10px;
-    }
-    @media (max-width:520px){
-      .stripGrid{ gap:8px; }
-    }
-    .stripTok{
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      border-radius:14px;
-      min-height:42px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      font-weight:900;
-      user-select:none;
-      cursor:grab;
-    }
-    .stripTok:active{ cursor:grabbing; }
-    .stripTok.used{
-      opacity:.35;
-      cursor:not-allowed;
-    }
-    .stripTok input{
-      width:100%;
-      height:40px;
-      border:none;
-      outline:none;
-      background: transparent;
-      color: var(--ink);
-      font-weight:900;
       text-align:center;
-      font-size:14px;
-    }
-    .stripTok.badOrder{
-      box-shadow: 0 0 0 3px rgba(255,77,109,.18) inset;
-      border-color: rgba(255,77,109,.35);
     }
 
-    /* Advanced: pair cards */
-    .pairCards{
-      display:grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap:10px;
+    .solLine{
+      font-size:11px;
+      color: var(--muted);
+      font-weight:800;
+      display:none;
     }
-    @media (max-width:980px){
-      .pairCards{ grid-template-columns: repeat(2, 1fr); }
+    .revealOn .solLine{ display:block; }
+
+    .cell.ok{
+      box-shadow: 0 0 0 3px rgba(52,168,83,.18) inset;
     }
-    @media (max-width:520px){
-      .pairCards{ grid-template-columns:1fr; }
+    .cell.bad{
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, .16) inset;
     }
-    .pairCard{
-      border:1px solid var(--line);
-      background: rgba(0,0,0,.15);
-      border-radius:16px;
-      padding:10px 12px;
+
+    /* Pairs */
+    .pairsWrap{
       display:flex;
       flex-direction:column;
-      gap:10px;
-      cursor:grab;
-      user-select:none;
-      transition: border-color .2s ease, background .2s ease, transform .08s ease;
+      gap:8px;
+      min-height:0;
     }
-    .pairCard:hover{ border-color: rgba(255,255,255,.18); background: rgba(0,0,0,.20); }
-    .pairCard:active{ transform: translateY(1px); cursor:grabbing; }
-    .pairTop{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-    }
-    .pairSlots{
+    .pairsGrid{
       display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
+      grid-template-columns: repeat(2, 1fr);
+      gap:8px;
+      min-height:0;
     }
-    .pairSlot{
-      border-radius:14px;
-      border:1px dashed rgba(255,255,255,.14);
-      background: rgba(255,255,255,.03);
-      min-height:40px;
+    .pairCard{
+      border:2px solid #111;
+      border-radius: 14px;
+      background:#fff;
+      padding:8px;
       display:flex;
       align-items:center;
-      justify-content:center;
-      padding:8px 10px;
+      justify-content:space-between;
       gap:8px;
+      user-select:none;
+      position:relative;
+      min-height:58px;
+    }
+    .pairSlots{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex:1;
+      min-width:0;
+    }
+    .pairSlot{
+      width:38px; height:38px;
+      border-radius: 12px;
+      background: #fff;
+      border:1px dashed rgba(15,23,42,.20);
+      display:grid;
+      place-items:center;
+      font-weight:1000;
+      color:#111;
+      overflow:hidden;
+      position:relative;
     }
     .pairSlot.filled{
       border-style:solid;
-      border-color: rgba(255,255,255,.14);
-      background: rgba(255,255,255,.05);
-      cursor:pointer;
+      background: var(--chip);
+    }
+    .pairSep{
+      font-weight:1000;
+      color: rgba(15,23,42,.45);
     }
 
-    /* Footer */
-    .footer{
-      margin-top:14px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      padding:12px 14px;
-      border-radius: var(--radius);
-      color: var(--muted);
-      font-size:13px;
-      line-height:1.45;
-      box-shadow: var(--shadow);
+    .marks{
+      display:flex;
+      gap:6px;
+      align-items:center;
+      flex:0 0 auto;
     }
-    .footer a{ color: var(--ink); text-decoration: none; border-bottom:1px dashed rgba(255,255,255,.25); }
-    .footer a:hover{ border-bottom-color: rgba(255,255,255,.55); }
+    .mark{
+      width:22px;height:22px;
+      border-radius: 9px;
+      display:grid;
+      place-items:center;
+      font-weight:1000;
+      font-size:12px;
+      border:1px solid rgba(15,23,42,.12);
+      background: var(--chip);
+      color: rgba(15,23,42,.5);
+    }
+    .mark.add.on{
+      background: rgba(244,180,0,.22);
+      border-color: rgba(244,180,0,.38);
+      color:#7a4b00;
+    }
+    .mark.mul.on{
+      background: rgba(52,168,83,.20);
+      border-color: rgba(52,168,83,.34);
+      color:#0f5a2a;
+    }
+    .mark.over{
+      box-shadow: 0 0 0 3px rgba(220,38,38,.14) inset;
+      border-color: rgba(220,38,38,.35);
+      color: rgba(220,38,38,.92);
+      background: rgba(220,38,38,.06);
+    }
 
-    /* Help modal */
-    .modalBack{
+    /* Numbers pool */
+    .numsGrid{
+      display:grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap:8px;
+    }
+    .numTok{
+      border:2px solid #111;
+      border-radius: 14px;
+      background:#fff;
+      min-height:44px;
+      display:grid;
+      place-items:center;
+      font-weight:1000;
+      user-select:none;
+      position:relative;
+    }
+    .numTok.used{
+      opacity:.38;
+    }
+
+    /* editable number: input */
+    .numTok .in{
+      width:100%;
+      height:100%;
+      border:0;
+      outline:0;
+      font: inherit;
+      font-weight:1000;
+      text-align:center;
+      background: transparent;
+      color: #111;
+    }
+    .numTok.edit{
+      background: rgba(15,23,42,.03);
+    }
+
+    /* Drag ghost */
+    .ghost{
+      position:fixed;
+      left:0; top:0;
+      transform: translate(-9999px,-9999px);
+      pointer-events:none;
+      z-index:200;
+      background:#fff;
+      border:2px solid #111;
+      border-radius: 14px;
+      padding:10px 12px;
+      font-weight:1000;
+      box-shadow: 0 12px 30px rgba(15,23,42,.18);
+    }
+    .dropHot{
+      box-shadow: 0 0 0 3px rgba(15,23,42,.18) inset;
+    }
+
+    /* Toast */
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      padding:10px 12px;
+      border-radius: 14px;
+      background: rgba(15,23,42,.92);
+      color:#fff;
+      font-size:12px;
+      font-weight:800;
+      opacity:0;
+      transition: opacity .18s ease, transform .18s ease;
+      z-index:250;
+      pointer-events:none;
+      max-width: calc(100vw - 24px);
+      text-align:center;
+    }
+    .toast.show{ opacity:1; transform:translateX(-50%) translateY(-4px); }
+
+    /* Modal */
+    .back{
       position:fixed; inset:0;
-      background: rgba(0,0,0,.55);
+      background: rgba(2,6,23,.55);
       display:none;
       align-items:center;
       justify-content:center;
-      z-index:100;
-      padding:18px;
+      padding:14px;
+      z-index:300;
     }
-    .modalBack.show{ display:flex; }
+    .back.show{ display:flex; }
     .modal{
-      max-width:680px;
       width:100%;
+      max-width:560px;
+      background:#fff;
       border-radius: 18px;
-      border:1px solid rgba(255,255,255,.12);
-      background: linear-gradient(180deg, rgba(25,35,60,.96), rgba(15,26,46,.96));
-      box-shadow: var(--shadow);
+      border:1px solid rgba(15,23,42,.12);
+      box-shadow: 0 20px 60px rgba(2,6,23,.25);
       overflow:hidden;
     }
-    .modalHead{
-      padding:14px 16px;
+    .mHead{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:12px;
-      border-bottom:1px solid rgba(255,255,255,.10);
+      gap:10px;
+      padding:12px 14px;
+      border-bottom:1px solid rgba(15,23,42,.10);
+      font-weight:1000;
     }
-    .modalHead h3{ margin:0; font-size:14px; letter-spacing:.2px; }
-    .modalBody{
-      padding:14px 16px 16px 16px;
-      color: rgba(234,240,255,.92);
-      line-height:1.45;
+    .mBody{
+      padding:12px 14px 14px 14px;
+      color: rgba(15,23,42,.92);
       font-size:13px;
+      line-height:1.45;
     }
-    .modalBody ul{ margin:10px 0 0 18px; padding:0; color: rgba(234,240,255,.86); }
-    .modalBody li{ margin:6px 0; }
-    .xbtn{
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      border-radius: 12px;
+    .mBody ul{ margin:8px 0 0 18px; }
+    .mBody li{ margin:6px 0; }
+    .mFoot{
+      padding:10px 14px 14px 14px;
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+    }
+
+    .footer{
       padding:8px 10px;
-      cursor:pointer;
-      font-weight:900;
+      border-radius: var(--r-lg);
+      background: rgba(255,255,255,.85);
+      border:1px solid rgba(15,23,42,.08);
+      box-shadow: var(--shadow);
+      font-size:12px;
+      color: rgba(15,23,42,.72);
+      text-align:center;
     }
 
     /* Confetti canvas */
@@ -490,285 +509,232 @@
       position:fixed;
       inset:0;
       pointer-events:none;
-      z-index:120;
+      z-index:260;
     }
   </style>
 </head>
+
 <body>
   <canvas id="confetti"></canvas>
 
-  <div class="wrap">
+  <div class="app" id="appRoot">
     <div class="topbar">
       <div class="brand">
-        <h1>🧠 Tetonor <span class="pill" id="pillModes">Simple + Avanzado</span></h1>
-        <div class="pill" id="pillHints"></div>
+        <div class="logo">TETONOR</div>
+        <div class="sub">
+          <div class="mini" id="miniStatus"></div>
+          <div class="mini" id="miniHint"></div>
+        </div>
       </div>
 
-      <div style="display:flex; gap:10px; align-items:center;">
-        <div class="tabs" role="tablist" aria-label="Modos">
-          <button class="tab" id="tabSimple" role="tab" aria-selected="false">Simple</button>
-          <button class="tab active" id="tabAdv" role="tab" aria-selected="true">Avanzado</button>
+      <div class="rowBtns">
+        <button class="btn primary" id="btnNew">NUEVO</button>
+        <button class="btn" id="btnReveal">SOLUCIÓN</button>
+        <button class="btn icon" id="btnHelp" title="Help">?</button>
+        <button class="btn icon" id="btnLang" title="Language">🌐</button>
+
+        <div class="difficulty" title="Dificultad">
+          <span id="diffLabel">DIF</span>
+          <input id="diffRange" type="range" min="0" max="12" step="1" value="5">
+          <span id="diffVal">5</span>
         </div>
-        <button id="btnHelp" title="Help">❔ Help</button>
       </div>
     </div>
 
-    <div class="app">
-      <section class="card">
-        <div class="header">
-          <div class="title">
-            <h2 id="modeTitle">Modo Avanzado</h2>
-          </div>
+    <div class="main">
+      <!-- GRID -->
+      <div class="panel">
+        <div class="panelHead">
+          <div class="title" id="gridTitle">Grilla</div>
+          <div class="progress" id="progressText">0/16</div>
+        </div>
 
-          <div class="controls">
-            <button id="btnNew" class="primary">🎲 Nuevo</button>
-            <button id="btnCheck" class="good">✅ Chequear</button>
-            <button id="btnReset">🧹 Limpiar</button>
-            <button id="btnReveal" class="bad">🧠 Solución</button>
+        <div class="gridWrap" id="gridWrap">
+          <div class="grid" id="grid"></div>
+        </div>
+      </div>
+
+      <!-- PAIRS -->
+      <div class="panel pairsWrap">
+        <div class="panelHead">
+          <div class="title" id="pairsTitle">Pares</div>
+          <div class="progress" style="display:flex; gap:8px; align-items:center;">
+            <span class="mark add on">+</span>
+            <span class="mark mul on">×</span>
           </div>
         </div>
 
-        <div class="boardWrap">
-          <div class="boardFrame">
-            <div id="grid" class="grid"></div>
-          </div>
-          <div id="status" class="status">Listo.</div>
-        </div>
-      </section>
+        <div class="pairsGrid" id="pairsGrid"></div>
+      </div>
 
-      <aside class="card" id="panelCard"></aside>
+      <!-- NUMBERS -->
+      <div class="panel">
+        <div class="panelHead">
+          <div class="title" id="numsTitle">Números</div>
+          <div class="progress" id="numsHint"></div>
+        </div>
+        <div class="numsGrid" id="numsGrid"></div>
+      </div>
     </div>
 
-    <div class="footer" id="footerText">
-      Si te gustó esta web podes colaborar comprandome un modelito en
-      <a href="https://cults3d.com/en/users/PINGUE3D/3d-models" target="_blank" rel="noopener">https://cults3d.com/en/users/PINGUE3D/3d-models</a><br/>
-      <b>Mateo - PINGÜÉ3D</b>
+    <div class="footer" id="footer">
+      Si te gustó comprame un modelito 3d: <b>PINGÜÉ3D</b> · <b>Mateo</b>
     </div>
   </div>
 
-  <div id="toast" class="toast"></div>
+  <div class="ghost" id="ghost"></div>
+  <div class="toast" id="toast"></div>
 
   <!-- Help modal -->
-  <div id="helpBack" class="modalBack" aria-hidden="true">
+  <div class="back" id="back">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
-      <div class="modalHead">
-        <h3 id="helpTitle">Help</h3>
-        <button class="xbtn" id="helpClose">✕</button>
+      <div class="mHead">
+        <div id="helpTitle">Ayuda</div>
+        <button class="btn icon" id="btnClose">✕</button>
       </div>
-      <div class="modalBody" id="helpBody"></div>
+      <div class="mBody" id="helpBody"></div>
+      <div class="mFoot">
+        <button class="btn" id="btnClose2">OK</button>
+      </div>
     </div>
   </div>
 
   <script>
     // =========================================================
-    // i18n (ES/EN)
+    // i18n
     // =========================================================
-    const LANG = (navigator.language || "en").toLowerCase().startsWith("es") ? "es" : "en";
-    document.documentElement.lang = LANG;
+    let LANG = (navigator.language || "es").toLowerCase().startsWith("es") ? "es" : "en";
 
     const I18N = {
       es: {
-        modesPill: "Simple + Avanzado",
-        hintLeft: "Click izq",
-        hintRight: "Click der",
-        hintDbl: "Doble click",
-        hintMul: "×",
-        hintAdd: "+",
-        hintDel: "borrar celda",
-
-        tabSimple: "Simple",
-        tabAdv: "Avanzado",
-        help: "Ayuda",
-
-        modeSimple: "Modo Simple",
-        modeAdv: "Modo Avanzado",
-
-        newBtn: "🎲 Nuevo",
-        checkBtn: "✅ Chequear",
-        resetBtn: "🧹 Limpiar",
-        revealBtn: "🧠 Solución",
-        hideBtn: "🙈 Ocultar",
-
-        ready: "Listo.",
-        toastNew: "Nuevo puzzle listo.",
-        toastReset: "Limpio.",
-        toastNeedPair: "Arrastrá un par primero.",
-        toastNeedNumber: "Completá el número primero.",
-        toastMissingCells: "Faltan celdas.",
-        toastMissingPairs: "Faltan pares (armá las tarjetas).",
-        toastMissingHoles: "Faltan huecos.",
-        toastOrder: "Pool fuera de orden.",
-        toastPerfect: "¡Perfecto! ✅",
-        toastErrors: "Hay errores ❌",
-
-        helpTitle: "Ayuda",
-        helpSimple: `
-          <b>Modo Simple</b>
+        new:"NUEVO",
+        sol:"SOLUCIÓN",
+        help:"Ayuda",
+        grid:"Grilla",
+        pairs:"Pares",
+        nums:"Números",
+        hint:"",
+        statusReady:"",
+        statusWin:"¡Victoria! ✅",
+        statusErr:"Hay errores ❌",
+        needFill:"Completá los huecos y armá tarjetas.",
+        diff:"NV",
+        diffTip:"Dificultad = cantidad de huecos (0 = más fácil)",
+        numsHint:(holes)=> holes===0 ? "sin huecos" : (holes===1 ? "1 hueco" : `${holes} huecos`),
+        helpBody: `
+          <b>Controles</b>
           <ul>
-            <li>Arrastrá <b>dos números</b> a cada celda (slot A y B).</li>
-            <li>Click izq = <b>×</b>, click der = <b>+</b>.</li>
-            <li>Cada número: <b>1 vez en +</b> y <b>1 vez en ×</b>.</li>
-            <li>Doble click en celda: la vacía.</li>
+            <li><b>Tap</b> en una celda de la grilla: cambia operación (vacío → <span style="color:#7a4b00;font-weight:900">+</span> → <span style="color:#0f5a2a;font-weight:900">×</span>).</li>
+            <li>Arrastrá números al <b>pool de pares</b> para armar 8 tarjetas.</li>
+            <li><b>Doble tap / doble click</b> sobre un número en una tarjeta: lo suelta (desvincula).</li>
+            <li>Arrastrá una tarjeta a una celda de la grilla.</li>
+            <li>Regla: cada tarjeta debe usarse <b>una vez en +</b> y <b>una vez en ×</b>.</li>
+            <li><b>Cualquier solución válida</b> cuenta como victoria.</li>
           </ul>
         `,
-        helpAdv: `
-          <b>Modo Avanzado</b>
-          <ul>
-            <li>Primero completá los <b>huecos</b> del strip (orden ascendente, repetidos permitidos).</li>
-            <li>Con los números del strip armás <b>8 tarjetas</b> (pares) arrastrando tokens a sus slots.</li>
-            <li>Un token del strip no se puede repetir en otra tarjeta.</li>
-            <li>Arrastrá una tarjeta a la grilla. Click izq = ×, click der = +.</li>
-            <li>Cada tarjeta debe usarse <b>una vez en +</b> y <b>una vez en ×</b>.</li>
-          </ul>
-        `,
-
-        panelAdvTitleStrip: "Pool de números",
-        panelAdvStripPill: "ordenados • completá huecos",
-        panelAdvTitlePairs: "Pool de pares",
-        panelAdvPairsPill: "armá 8 tarjetas • sin repetir tokens",
-        solutionLabel: "Solución:",
-
-        statusAdv: (filledBlanks, blanks, filledPairSlots, filledGrid)=>`Huecos: <strong>${filledBlanks}/${blanks}</strong> • Pares: <strong>${filledPairSlots}/16</strong> • Grilla: <strong>${filledGrid}/16</strong>. `,
-        footerHTML: `
-          Si te gustó esta web podes colaborar comprandome un modelito en
-          <a href="https://cults3d.com/en/users/PINGUE3D/3d-models" target="_blank" rel="noopener">https://cults3d.com/en/users/PINGUE3D/3d-models</a><br/>
-          <b>Mateo - PINGÜÉ3D</b>
-        `
+        toastNew:"Nuevo puzzle listo.",
+        toastRevealOn:"Mostrando solución (puede scrollear).",
+        toastRevealOff:"Ocultando solución.",
+        toastNeedNumber:"Ese número todavía está vacío.",
+        toastTokenUsed:"Ese número ya está usado en otra tarjeta.",
+        toastCardNotReady:"Esa tarjeta no está completa.",
+        toastNeedCard:"Arrastrá una tarjeta primero.",
+        toastStripOrder:"La pool debe estar ordenada (ascendente).",
+        toastMissing:"Falta completar cosas.",
+        toastWin:"¡Perfecto!",
+        footer:`Si te gustó comprame un modelito 3d: <a href="https://cults3d.com/es/usuarios/PINGUE3D/modelos-3d"> <b>PINGUE3D</b> </a> · <b>Mateo</b>`
       },
       en: {
-        modesPill: "Simple + Advanced",
-        hintLeft: "Left click",
-        hintRight: "Right click",
-        hintDbl: "Double click",
-        hintMul: "×",
-        hintAdd: "+",
-        hintDel: "clear cell",
-
-        tabSimple: "Simple",
-        tabAdv: "Advanced",
-        help: "Help",
-
-        modeSimple: "Simple Mode",
-        modeAdv: "Advanced Mode",
-
-        newBtn: "🎲 New",
-        checkBtn: "✅ Check",
-        resetBtn: "🧹 Clear",
-        revealBtn: "🧠 Solution",
-        hideBtn: "🙈 Hide",
-
-        ready: "Ready.",
-        toastNew: "New puzzle ready.",
-        toastReset: "Cleared.",
-        toastNeedPair: "Drag a pair first.",
-        toastNeedNumber: "Fill the number first.",
-        toastMissingCells: "Some cells are missing.",
-        toastMissingPairs: "Pairs are missing (build the cards).",
-        toastMissingHoles: "Some blanks are missing.",
-        toastOrder: "Pool is not ordered.",
-        toastPerfect: "Perfect! ✅",
-        toastErrors: "There are errors ❌",
-
-        helpTitle: "Help",
-        helpSimple: `
-          <b>Simple Mode</b>
+        new:"NEW",
+        sol:"SOLUTION",
+        help:"Help",
+        grid:"Grid",
+        pairs:"Pairs",
+        nums:"Numbers",
+        hint:"",
+        statusReady:"",
+        statusWin:"Victory! ✅",
+        statusErr:"There are errors ❌",
+        needFill:"Fill blanks and build cards.",
+        diff:"LVL",
+        diffTip:"Difficulty = number of blanks (0 = easiest)",
+        numsHint:(holes)=> holes===0 ? "no blanks" : (holes===1 ? "1 blank" : `${holes} blanks`),
+        helpBody: `
+          <b>Controls</b>
           <ul>
-            <li>Drag <b>two numbers</b> into each cell (slot A and B).</li>
-            <li>Left click = <b>×</b>, right click = <b>+</b>.</li>
-            <li>Each number: <b>once in +</b> and <b>once in ×</b>.</li>
-            <li>Double click a cell to clear it.</li>
+            <li><b>Tap</b> a grid cell: cycles operation (empty → <span style="color:#7a4b00;font-weight:900">+</span> → <span style="color:#0f5a2a;font-weight:900">×</span>).</li>
+            <li>Drag numbers into the <b>pair pool</b> to build 8 cards.</li>
+            <li><b>Double tap / double click</b> a number inside a card: release it.</li>
+            <li>Drag a card into a grid cell.</li>
+            <li>Rule: each card must be used <b>once in +</b> and <b>once in ×</b>.</li>
+            <li><b>Any valid solution</b> counts as a win.</li>
           </ul>
         `,
-        helpAdv: `
-          <b>Advanced Mode</b>
-          <ul>
-            <li>First fill the <b>blanks</b> in the strip (ascending order, duplicates allowed).</li>
-            <li>Using strip tokens, build <b>8 pair cards</b> by dragging tokens into their slots.</li>
-            <li>A strip token cannot be reused on another card.</li>
-            <li>Drag a card into the grid. Left click = ×, right click = +.</li>
-            <li>Each card must be used <b>once in +</b> and <b>once in ×</b>.</li>
-          </ul>
-        `,
-
-        panelAdvTitleStrip: "Number pool",
-        panelAdvStripPill: "ordered • fill blanks",
-        panelAdvTitlePairs: "Pair pool",
-        panelAdvPairsPill: "build 8 cards • no token repeats",
-        solutionLabel: "Solution:",
-
-        statusAdv: (filledBlanks, blanks, filledPairSlots, filledGrid)=>`Blanks: <strong>${filledBlanks}/${blanks}</strong> • Pairs: <strong>${filledPairSlots}/16</strong> • Grid: <strong>${filledGrid}/16</strong>. `,
-        footerHTML: `
-          If you liked this site you can support me by buying a model at
-          <a href="https://cults3d.com/en/users/PINGUE3D/3d-models" target="_blank" rel="noopener">https://cults3d.com/en/users/PINGUE3D/3d-models</a><br/>
-          <b>Mateo - PINGÜÉ3D</b>
-        `
+        toastNew:"New puzzle ready.",
+        toastRevealOn:"Showing solution (scroll enabled).",
+        toastRevealOff:"Hiding solution.",
+        toastNeedNumber:"That number is still blank.",
+        toastTokenUsed:"That number is already used by another card.",
+        toastCardNotReady:"That card is incomplete.",
+        toastNeedCard:"Drag a card first.",
+        toastStripOrder:"The pool must be ascending.",
+        toastMissing:"Something is missing.",
+        toastWin:"Perfect!",
+        footer:`If you liked it, buy me a 3D model: <b>PINGÜÉ3D</b> · <b>Mateo</b>`
       }
     };
 
-    const t = (k, ...args)=>{
+    const t = (k, ...args) => {
       const v = I18N[LANG][k];
       return (typeof v === "function") ? v(...args) : v;
     };
 
     // =========================================================
-    // Shared
+    // State + puzzle generation
     // =========================================================
-    const toastEl = document.getElementById("toast");
     const gridEl = document.getElementById("grid");
-    const panelCard = document.getElementById("panelCard");
-    const statusEl = document.getElementById("status");
+    const pairsEl = document.getElementById("pairsGrid");
+    const numsEl = document.getElementById("numsGrid");
+    const miniStatus = document.getElementById("miniStatus");
+    const miniHint = document.getElementById("miniHint");
+    const progressText = document.getElementById("progressText");
+    const numsHint = document.getElementById("numsHint");
+    const gridWrap = document.getElementById("gridWrap");
+    const appRoot = document.getElementById("appRoot");
 
     const btnNew = document.getElementById("btnNew");
-    const btnCheck = document.getElementById("btnCheck");
-    const btnReset = document.getElementById("btnReset");
     const btnReveal = document.getElementById("btnReveal");
-
-    const tabSimple = document.getElementById("tabSimple");
-    const tabAdv = document.getElementById("tabAdv");
-    const modeTitle = document.getElementById("modeTitle");
-
     const btnHelp = document.getElementById("btnHelp");
-    const helpBack = document.getElementById("helpBack");
+    const btnLang = document.getElementById("btnLang");
+
+    const diffRange = document.getElementById("diffRange");
+    const diffVal = document.getElementById("diffVal");
+    const diffLabel = document.getElementById("diffLabel");
+
+    const back = document.getElementById("back");
     const helpBody = document.getElementById("helpBody");
-    const helpClose = document.getElementById("helpClose");
+    const helpTitle = document.getElementById("helpTitle");
+    const btnClose = document.getElementById("btnClose");
+    const btnClose2 = document.getElementById("btnClose2");
 
-    const pillModes = document.getElementById("pillModes");
-    const pillHints = document.getElementById("pillHints");
-    const footerText = document.getElementById("footerText");
+    const footer = document.getElementById("footer");
+    const toastEl = document.getElementById("toast");
 
-    const DRAG_TOKEN = "application/x-tetonor-token";
-    const DRAG_PAIR  = "application/x-tetonor-pair";
-
-    let mode = "adv";      // default avanzado
     let reveal = false;
 
-    function applyI18n(){
-      pillModes.textContent = t("modesPill");
-      pillHints.innerHTML = `
-        <span>${t("hintLeft")} = <b style="color:var(--accent2)">${t("hintMul")}</b></span>
-        <span>${t("hintRight")} = <b style="color:var(--warn)">${t("hintAdd")}</b></span>
-        <span>${t("hintDbl")} = ${t("hintDel")}</span>
-      `;
+    const S = {
+      difficulty: 5, // cantidad de huecos (0 = más fácil)
+      strip: [],     // [{value:number|null, isBlank:boolean}]
+      stripGuess: Array(16).fill(null),
+      // pair cards: 8 cards, each slot stores stripIdx or null
+      cards: Array.from({length:8}, ()=>({a:null,b:null})),
+      // grid: 16 cells, each has cardId or null + op null/+/*
+      grid: Array.from({length:16}, ()=>({cardId:null, op:null})),
+      // hidden solution (solo para mostrar cuando reveal ON)
+      solution: { fullStrip:[], solPairs:[], cells:[] }
+    };
 
-      tabSimple.textContent = t("tabSimple");
-      tabAdv.textContent = t("tabAdv");
-      btnHelp.innerHTML = `❔ ${t("help")}`;
-      btnHelp.title = t("help");
-
-      btnNew.textContent = t("newBtn");
-      btnCheck.textContent = t("checkBtn");
-      btnReset.textContent = t("resetBtn");
-      btnReveal.textContent = t("revealBtn");
-
-      document.getElementById("helpTitle").textContent = t("helpTitle");
-      footerText.innerHTML = t("footerHTML");
-    }
-
-    function showToast(msg){
-      toastEl.textContent = msg;
-      toastEl.classList.add("show");
-      setTimeout(()=>toastEl.classList.remove("show"), 1400);
-    }
+    function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
     function shuffle(arr){
       for(let i=arr.length-1;i>0;i--){
         const j=Math.floor(Math.random()*(i+1));
@@ -776,294 +742,41 @@
       }
       return arr;
     }
-    function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
 
-    document.addEventListener("contextmenu", (e)=>{
-      if(e.target.closest(".cell")) e.preventDefault();
-    });
-
-    // =========================================================
-    // HELP MODAL
-    // =========================================================
-    function openHelp(){
-      helpBody.innerHTML = (mode==="simple") ? t("helpSimple") : t("helpAdv");
-      helpBack.classList.add("show");
-      helpBack.setAttribute("aria-hidden","false");
-    }
-    function closeHelp(){
-      helpBack.classList.remove("show");
-      helpBack.setAttribute("aria-hidden","true");
-    }
-    btnHelp.addEventListener("click", openHelp);
-    helpClose.addEventListener("click", closeHelp);
-    helpBack.addEventListener("click", (e)=>{ if(e.target===helpBack) closeHelp(); });
-    document.addEventListener("keydown",(e)=>{ if(e.key==="Escape") closeHelp(); });
-
-    // =========================================================
-    // MODE SIMPLE (tal cual lo tenías bien)
-    // =========================================================
-    const SIMPLE = { N:16, puzzle:null, state:null };
-
-    function simpleGenerateTokens(){
-      const vals=[];
-      while(vals.length<SIMPLE.N){
-        const r=Math.random();
-        let v;
-        if(r<0.55) v=randInt(2,10);
-        else if(r<0.85) v=randInt(11,24);
-        else v=randInt(25,48);
-        vals.push(v);
-      }
-      vals.sort((a,b)=>a-b);
-      return vals.map((value,id)=>({id,value}));
-    }
-    function simplePairUp(ids){
-      const pool=ids.slice(); shuffle(pool);
-      const pairs=[];
-      for(let i=0;i<pool.length;i+=2) pairs.push([pool[i],pool[i+1]]);
-      return pairs;
-    }
-    function simpleGeneratePuzzle(){
-      const tokens=simpleGenerateTokens();
-      const ids=tokens.map(t=>t.id);
-      const addPairs=simplePairUp(ids);
-      const mulPairs=simplePairUp(ids);
-
-      const cells=[];
-      for(const [a,b] of addPairs) cells.push({target: tokens[a].value + tokens[b].value, op:"+", aTok:a, bTok:b});
-      for(const [a,b] of mulPairs) cells.push({target: tokens[a].value * tokens[b].value, op:"x", aTok:a, bTok:b});
-
-      shuffle(cells);
-      return {tokens,cells};
-    }
-    function simpleResetState(){
-      SIMPLE.state = Array.from({length:16}, ()=>({aTok:null,bTok:null,op:null}));
-    }
-    function simpleUsage(){
-      const usage=Array.from({length:16}, ()=>({add:0,mul:0}));
-      SIMPLE.state.forEach(s=>{
-        if(s.aTok===null||s.bTok===null||s.op===null) return;
-        const k = s.op==="+" ? "add" : "mul";
-        usage[s.aTok][k]++; usage[s.bTok][k]++;
-      });
-      return usage;
-    }
-    function simpleCellComputedValue(i){
-      const s=SIMPLE.state[i];
-      if(s.aTok===null||s.bTok===null||s.op===null) return null;
-      const a=SIMPLE.puzzle.tokens[s.aTok].value;
-      const b=SIMPLE.puzzle.tokens[s.bTok].value;
-      return (s.op==="+") ? (a+b) : (a*b);
-    }
-
-    function renderSimplePanel(){
-      panelCard.innerHTML = `
-        <div class="header">
-          <div class="title">
-            <h2>${LANG==="es"?"Números disponibles":"Available numbers"}</h2>
-            <div class="pill">${LANG==="es"?"arrastrá a los recuadros":"drag into the boxes"}</div>
-          </div>
-        </div>
-        <div class="panelWrap">
-          <div class="section">
-            <div class="stripGrid" id="simpleTokens"></div>
-          </div>
-        </div>
-      `;
-      const tokensEl=document.getElementById("simpleTokens");
-      const usage=simpleUsage();
-      SIMPLE.puzzle.tokens.forEach(tok=>{
-        const el=document.createElement("div");
-        el.className="stripTok";
-        el.draggable=true;
-        el.dataset.tokenId=String(tok.id);
-        const u=usage[tok.id];
-        const addClass = `mark add ${u.add>0?"":"off"} ${u.add>1?"over":""}`;
-        const mulClass = `mark mul ${u.mul>0?"":"off"} ${u.mul>1?"over":""}`;
-        const fullyUsed = (u.add===1 && u.mul===1);
-        if(fullyUsed) el.style.opacity="0.55";
-        el.addEventListener("dragstart",(e)=>{
-          e.dataTransfer.clearData();
-          e.dataTransfer.setData(DRAG_TOKEN, el.dataset.tokenId);
-          e.dataTransfer.setData("text/plain", el.dataset.tokenId);
-          e.dataTransfer.effectAllowed="copy";
-        });
-        el.innerHTML = `
-          <div class="chip">${tok.value}</div>
-          <div class="marks">
-            <span class="${addClass}">+</span>
-            <span class="${mulClass}">×</span>
-          </div>
-        `;
-        tokensEl.appendChild(el);
-      });
-    }
-
-    function renderSimpleGrid(){
-      gridEl.innerHTML="";
-      for(let i=0;i<16;i++){
-        const target=SIMPLE.puzzle.cells[i].target;
-        const s=SIMPLE.state[i];
-
-        const computed = simpleCellComputedValue(i);
-        const isComplete = computed!==null;
-        const isCorrect = isComplete && computed===target;
-
-        const cell=document.createElement("div");
-        cell.className="cell";
-        if(isComplete) cell.classList.add(isCorrect ? "correct" : "incorrect");
-
-        let badgeClass="none", badgeText="?";
-        if(s.op==="+"){ badgeClass="add"; badgeText="+"; }
-        else if(s.op==="x"){ badgeClass="mul"; badgeText="×"; }
-
-        cell.addEventListener("dragover",(e)=>{ e.preventDefault(); cell.classList.add("dragover"); e.dataTransfer.dropEffect="copy"; });
-        cell.addEventListener("dragleave",()=>cell.classList.remove("dragover"));
-        cell.addEventListener("drop",(e)=>{
-          e.preventDefault(); cell.classList.remove("dragover");
-          const raw=e.dataTransfer.getData(DRAG_TOKEN) || e.dataTransfer.getData("text/plain");
-          const tokId=parseInt(raw,10);
-          if(Number.isNaN(tokId)) return;
-          if(s.aTok===null) s.aTok=tokId;
-          else if(s.bTok===null) s.bTok=tokId;
-          else s.aTok=tokId;
-          renderAll();
-        });
-
-        cell.addEventListener("click", ()=>{ s.op="x"; renderAll(); });
-        cell.addEventListener("contextmenu",(e)=>{ e.preventDefault(); s.op="+"; renderAll(); });
-        cell.addEventListener("dblclick", ()=>{ SIMPLE.state[i]={aTok:null,bTok:null,op:null}; renderAll(); });
-
-        function slotHtml(key){
-          const tokId=s[key];
-          if(tokId===null) return `<div class="slot" data-slot="${key}"></div>`;
-          const v=SIMPLE.puzzle.tokens[tokId].value;
-          return `<div class="slot" data-slot="${key}"><span class="chip small">${v}</span></div>`;
-        }
-
-        let revealLine="";
-        if(reveal){
-          const sol=SIMPLE.puzzle.cells[i];
-          const a=SIMPLE.puzzle.tokens[sol.aTok].value;
-          const b=SIMPLE.puzzle.tokens[sol.bTok].value;
-          const sym=sol.op==="x" ? "×" : "+";
-          revealLine = `<div style="margin-top:8px;color:rgba(169,183,214,.9);font-size:12px">
-            ${LANG==="es"?"Solución":"Solution"}: <b style="color:var(--ink)">${a} ${sym} ${b}</b>
-          </div>`;
-        }
-
-        cell.innerHTML = `
-          <div class="topRow">
-            <div class="target">${target}</div>
-            <div class="opBadge ${badgeClass}">${badgeText}</div>
-          </div>
-          <div class="slots2">
-            ${slotHtml("aTok")}
-            ${slotHtml("bTok")}
-          </div>
-          ${revealLine}
-        `;
-        gridEl.appendChild(cell);
-
-        cell.querySelectorAll(".slot").forEach(slot=>{
-          const key=slot.getAttribute("data-slot");
-
-          slot.addEventListener("dragover",(e)=>{
-            e.preventDefault();
-            e.stopPropagation();
-            slot.classList.add("dragover");
-            e.dataTransfer.dropEffect="copy";
-          });
-          slot.addEventListener("dragleave",()=>slot.classList.remove("dragover"));
-          slot.addEventListener("drop",(e)=>{
-            e.preventDefault();
-            e.stopPropagation();
-            slot.classList.remove("dragover");
-            const raw=e.dataTransfer.getData(DRAG_TOKEN) || e.dataTransfer.getData("text/plain");
-            const tokId=parseInt(raw,10);
-            if(Number.isNaN(tokId)) return;
-            s[key]=tokId;
-            renderAll();
-          });
-        });
-      }
-    }
-
-    function simpleCheck(){
-      const incomplete = SIMPLE.state.some(s=>s.aTok===null||s.bTok===null||s.op===null);
-      if(incomplete){
-        showToast(t("toastMissingCells"));
-        statusEl.innerHTML = `<span class="err"><strong>${LANG==="es"?"Incompleto":"Incomplete"}:</strong> ${LANG==="es"?"faltan números y/o operación":"missing numbers and/or operation"}.</span>`;
-        return;
-      }
-
-      let okCells=true;
-      for(let i=0;i<16;i++){
-        const computed=simpleCellComputedValue(i);
-        if(computed!==SIMPLE.puzzle.cells[i].target){ okCells=false; break; }
-      }
-
-      const usage=simpleUsage();
-      const okUsage=usage.every(u=>u.add===1 && u.mul===1);
-
-      if(okCells && okUsage){
-        showToast(t("toastPerfect"));
-        statusEl.innerHTML = `<span class="ok"><strong>${LANG==="es"?"Correcto":"Correct"}:</strong> ${LANG==="es"?"todo coincide y usos OK":"everything matches and usage OK"}.</span>`;
-        confettiBurst();
-      }else{
-        showToast(t("toastErrors"));
-        statusEl.innerHTML = `<span class="err"><strong>${LANG==="es"?"Incorrecto":"Incorrect"}:</strong> ${LANG==="es"?"revisá grilla/usos":"check grid/usage"}.</span>`;
-      }
-    }
-
-    // =========================================================
-    // MODE AVANZADO (nuevo: strip suelto + cards armables + grilla)
-    // =========================================================
-    const ADV = {
-      puzzle:null,
-      state:null
-    };
-
-    function advGenerateStripNumbers(){
+    function genFullStrip(){
+      // 16 números ordenados, con repetidos permitidos
       const nums=[];
       let cur=randInt(1,6);
       for(let i=0;i<16;i++){
-        const step = (Math.random()<0.40)?0:(Math.random()<0.75?1:randInt(2,3));
-        cur = Math.min(cur+step, 48);
+        const step = (Math.random()<0.42)?0:(Math.random()<0.78?1:randInt(2,3));
+        cur = Math.min(cur + step, 48);
         nums.push(cur);
       }
       nums.sort((a,b)=>a-b);
       return nums;
     }
 
-    function advMaskBlanks(full){
-      const blanksCount=randInt(2,5);
-      const idxs=new Set();
-      while(idxs.size<blanksCount){
-        const i=randInt(0,15);
-        if(i===0||i===15) continue;
+    function maskStrip(full, holes){
+      // holes = cantidad de huecos (0 = fácil)
+      const idxs = new Set();
+      while(idxs.size < holes){
+        const i = randInt(0,15);
+        if(i===0 || i===15) continue; // extremos fijos para mantener orden más fácil
         idxs.add(i);
       }
-      return full.map((v,i)=>({value: idxs.has(i)?null:v, isBlank: idxs.has(i)}));
+      return full.map((v,i)=>({ value: idxs.has(i) ? null : v, isBlank: idxs.has(i) }));
     }
 
-    // solution pairing: se arma internamente, pero el jugador lo reconstruye con cards
-    function advGenerateSolutionPairs(){
+    function genSolutionPairs(){
       const idxs=[...Array(16)].map((_,i)=>i);
       shuffle(idxs);
       const pairs=[];
-      for(let i=0;i<16;i+=2){
-        pairs.push([idxs[i], idxs[i+1]]);
-      }
-      return pairs; // 8 pares (indices del strip)
+      for(let i=0;i<16;i+=2) pairs.push([idxs[i], idxs[i+1]]);
+      return pairs; // 8 pares
     }
 
-    function advGeneratePuzzle(){
-      const fullStrip=advGenerateStripNumbers();
-      const maskedStrip=advMaskBlanks(fullStrip);
-      const solPairs=advGenerateSolutionPairs(); // pares por indices
-
-      // targets: por cada par -> 2 celdas (+ y ×)
+    function genTargets(fullStrip, solPairs){
+      // 16 celdas: por cada par -> una suma y un producto
       const cells=[];
       for(let p=0;p<8;p++){
         const [i1,i2]=solPairs[p];
@@ -1072,71 +785,79 @@
         cells.push({target:a*b, op:"x", pairId:p});
       }
       shuffle(cells);
-
-      return { maskedStrip, solution:{ fullStrip, solPairs }, cells };
+      return cells;
     }
 
-    function advResetState(){
-      ADV.state = {
-        stripGuess: Array.from({length:16}, ()=>null), // para huecos
-        // pair cards armables: 8 tarjetas, cada slot guarda idx del strip (0..15) o null
-        pairCards: Array.from({length:8}, ()=>({a:null,b:null})),
-        // grid: 16 celdas con pairCardId + op
-        grid: Array.from({length:16}, ()=>({cardId:null, op:null}))
-      };
+    function newGame(){
+      const fullStrip = genFullStrip();
+      const solPairs = genSolutionPairs();
+      const cells = genTargets(fullStrip, solPairs);
+
+      S.solution.fullStrip = fullStrip.slice();
+      S.solution.solPairs = solPairs.map(p=>p.slice());
+      S.solution.cells = cells.map(c=>({...c}));
+
+      S.strip = maskStrip(fullStrip, S.difficulty);
+      S.stripGuess = Array(16).fill(null);
+      S.cards = Array.from({length:8}, ()=>({a:null,b:null}));
+      S.grid  = Array.from({length:16}, ()=>({cardId:null, op:null}));
+
+      reveal = false;
+      btnReveal.classList.remove("toggleOn");
+
+      renderAll();
+      toast(t("toastNew"));
+      setStatus(t("statusReady"));
     }
 
-    function advStripValueAt(idx){
-      const item=ADV.puzzle.maskedStrip[idx];
+    // =========================================================
+    // Derived helpers
+    // =========================================================
+    function stripValueAt(i){
+      const item = S.strip[i];
       if(!item.isBlank) return item.value;
-      return ADV.state.stripGuess[idx];
+      return S.stripGuess[i];
     }
 
-    function advStripTokenUsed(idx){
-      // token usado si está asignado a alguna tarjeta (en a/b)
-      return ADV.state.pairCards.some(c => c.a===idx || c.b===idx);
+    function stripTokenUsed(i){
+      return S.cards.some(c=>c.a===i || c.b===i);
     }
 
-    function advAllStripFilled(){
-      for(let i=0;i<16;i++){
-        if(ADV.puzzle.maskedStrip[i].isBlank && advStripValueAt(i)===null) return false;
-      }
-      return true;
+    function cardReady(cardId){
+      const c=S.cards[cardId];
+      if(c.a===null || c.b===null) return false;
+      const a = stripValueAt(c.a);
+      const b = stripValueAt(c.b);
+      return (a!==null && b!==null);
     }
 
-    function advOrderOK(){
-      const vals=Array.from({length:16},(_,i)=>advStripValueAt(i));
+    function cardValues(cardId){
+      const c=S.cards[cardId];
+      const a = (c.a===null) ? null : stripValueAt(c.a);
+      const b = (c.b===null) ? null : stripValueAt(c.b);
+      return {a,b};
+    }
+
+    function orderOK(){
+      const vals = Array.from({length:16},(_,i)=>stripValueAt(i));
       for(let i=1;i<16;i++){
         if(vals[i]!==null && vals[i-1]!==null && vals[i] < vals[i-1]) return false;
       }
       return true;
     }
 
-    function advCardReady(cardId){
-      const c=ADV.state.pairCards[cardId];
-      return c.a!==null && c.b!==null && advStripValueAt(c.a)!==null && advStripValueAt(c.b)!==null;
+    function gridComputed(i){
+      const g=S.grid[i];
+      if(g.cardId===null || g.op===null) return null;
+      if(!cardReady(g.cardId)) return null;
+      const {a,b}=cardValues(g.cardId);
+      if(a===null || b===null) return null;
+      return g.op==="+" ? (a+b) : (a*b);
     }
 
-    function advCardValues(cardId){
-      const c=ADV.state.pairCards[cardId];
-      const a = c.a===null ? null : advStripValueAt(c.a);
-      const b = c.b===null ? null : advStripValueAt(c.b);
-      return {a,b};
-    }
-
-    function advCellComputedValue(cellIdx){
-      const s=ADV.state.grid[cellIdx];
-      if(s.cardId===null || s.op===null) return null;
-      if(!advCardReady(s.cardId)) return null;
-      const {a,b} = advCardValues(s.cardId);
-      if(a===null||b===null) return null;
-      return s.op==="+" ? (a+b) : (a*b);
-    }
-
-    function advCardUsage(){
-      // por tarjeta: cuántas veces se usó en + y en × dentro de la grilla
-      const usage=Array.from({length:8}, ()=>({add:0,mul:0}));
-      ADV.state.grid.forEach(g=>{
+    function cardUsage(){
+      const usage = Array.from({length:8}, ()=>({add:0,mul:0}));
+      S.grid.forEach(g=>{
         if(g.cardId===null || g.op===null) return;
         if(g.op==="+") usage[g.cardId].add++;
         else usage[g.cardId].mul++;
@@ -1144,333 +865,622 @@
       return usage;
     }
 
-    function renderAdvPanel(){
-      const blanks = ADV.puzzle.maskedStrip.filter(x=>x.isBlank).length;
+    function progress(){
+      const filled = S.grid.filter(g=>g.cardId!==null && g.op!==null).length;
+      return filled;
+    }
 
-      panelCard.innerHTML = `
-        <div class="header">
-          <div class="title">
-            <h2>${t("modeAdv")}</h2>
-          </div>
-        </div>
-        <div class="panelWrap">
-          <div class="section">
-            <div class="sectionHead">
-              <h3>${t("panelAdvTitleStrip")}</h3>
-              <div class="mini">${t("panelAdvStripPill")}</div>
-            </div>
-            <div class="stripGrid" id="stripGrid"></div>
-          </div>
+    // =========================================================
+    // Rendering (con preservación de foco)
+    // =========================================================
+    function snapshotFocus(){
+      const a = document.activeElement;
+      if(!a) return null;
+      if(a.tagName === "INPUT" && a.dataset && a.dataset.stripIdx){
+        return {
+          stripIdx: parseInt(a.dataset.stripIdx,10),
+          start: a.selectionStart,
+          end: a.selectionEnd
+        };
+      }
+      return null;
+    }
+    function restoreFocus(snap){
+      if(!snap) return;
+      const inp = document.querySelector(`input[data-strip-idx="${snap.stripIdx}"]`);
+      if(!inp) return;
+      inp.focus({preventScroll:true});
+      try{
+        inp.setSelectionRange(snap.start ?? inp.value.length, snap.end ?? inp.value.length);
+      }catch(_){}
+    }
 
-          <div class="section">
-            <div class="sectionHead">
-              <h3>${t("panelAdvTitlePairs")}</h3>
-              <div class="mini">${t("panelAdvPairsPill")}</div>
-            </div>
-            <div class="pairCards" id="pairCards"></div>
-          </div>
-        </div>
-      `;
+    function applyTexts(){
+      btnNew.textContent = t("new");
+      btnReveal.textContent = t("sol");
+      btnHelp.title = t("help");
+      helpTitle.textContent = t("help");
+      helpBody.innerHTML = t("helpBody");
 
-      // -------- Strip tokens
-      const stripEl=document.getElementById("stripGrid");
+      document.getElementById("gridTitle").textContent = t("grid");
+      document.getElementById("pairsTitle").textContent = t("pairs");
+      document.getElementById("numsTitle").textContent = t("nums");
+
+      miniHint.textContent = t("hint");
+
+      diffLabel.textContent = t("diff");
+      document.querySelector(".difficulty").title = t("diffTip");
+
+      footer.innerHTML = I18N[LANG].footer;
+      numsHint.textContent = t("numsHint", S.difficulty);
+    }
+
+    function renderAll(){
+      const snap = snapshotFocus();
+
+      applyTexts();
+      renderNumbers();
+      renderPairs();
+      renderGrid();
+      renderStatusLine();
+
+      restoreFocus(snap);
+
+      // check auto-win after any interaction
+      checkVictory(false);
+    }
+
+    function renderStatusLine(){
+      const p = progress();
+      progressText.textContent = `${p}/16`;
+      miniStatus.textContent = orderOK() ? t("statusReady") : t("toastStripOrder");
+    }
+
+    function renderNumbers(){
+      numsEl.innerHTML = "";
       for(let i=0;i<16;i++){
-        const item=ADV.puzzle.maskedStrip[i];
-        const val=advStripValueAt(i);
-        const used=advStripTokenUsed(i);
+        const item = S.strip[i];
+        const val = stripValueAt(i);
+        const used = stripTokenUsed(i);
 
-        const tok=document.createElement("div");
-        tok.className="stripTok" + (used ? " used":"");
-        tok.dataset.stripIdx=String(i);
-
-        // feedback orden (solo si hay valor)
-        if(val!==null && !advOrderOK()){
-          // marcamos solo los inputs/tokens problemáticos luego (más abajo)
-        }
+        const tok = document.createElement("div");
+        tok.className = "numTok" + (used ? " used":"") + (item.isBlank ? " edit":"");
+        tok.dataset.kind = "token";
+        tok.dataset.stripIdx = String(i);
 
         if(item.isBlank){
-          // editable
-          tok.innerHTML = `<input inputmode="numeric" pattern="[0-9]*" placeholder="_" value="${val??""}" aria-label="blank ${i}">`;
-          const inp=tok.querySelector("input");
+          const inp = document.createElement("input");
+          inp.className = "in";
+          inp.inputMode = "numeric";
+          inp.pattern = "[0-9]*";
+          inp.placeholder = "—";
+          inp.value = (val===null ? "" : String(val));
+          inp.dataset.stripIdx = String(i);     // para restaurar foco
+          inp.setAttribute("data-strip-idx", String(i));
+
+          // FIX foco: NO re-render “agresivo” que te saca del input.
+          // Solo actualizamos el estado y luego re-render con restoreFocus (arriba).
           inp.addEventListener("input", ()=>{
-            let v = inp.value.replace(/[^\d]/g,"");
-            inp.value=v;
-            ADV.state.stripGuess[i] = (v==="" ? null : parseInt(v,10));
+            const clean = inp.value.replace(/[^\d]/g,"");
+            if(inp.value !== clean) inp.value = clean;
+            S.stripGuess[i] = (clean==="" ? null : parseInt(clean,10));
+            // Re-render completo pero restaurando foco y caret
             renderAll();
           });
-          // no draggable desde el input directamente
-          inp.addEventListener("mousedown",(e)=>e.stopPropagation());
-          inp.addEventListener("pointerdown",(e)=>e.stopPropagation());
+
+          tok.appendChild(inp);
         }else{
           tok.textContent = String(item.value);
         }
 
-        // draggable solo si:
-        // - tiene valor (pre o completado)
-        // - no está usado
-        // - no estás clickenado un input
-        tok.draggable = (!used && advStripValueAt(i)!==null);
-        tok.addEventListener("dragstart",(e)=>{
-          if(used) { e.preventDefault(); return; }
-          if(advStripValueAt(i)===null){ showToast(t("toastNeedNumber")); e.preventDefault(); return; }
-          e.dataTransfer.clearData();
-          e.dataTransfer.setData(DRAG_TOKEN, String(i));     // IMPORTANT: arrastramos idx (no valor)
-          e.dataTransfer.setData("text/plain", String(i));
-          e.dataTransfer.effectAllowed="copy";
-        });
+        // Marcar fuera de orden (solo si hay valores vecinos)
+        const v = stripValueAt(i);
+        if(v!==null){
+          const prev = i>0 ? stripValueAt(i-1) : null;
+          const next = i<15 ? stripValueAt(i+1) : null;
+          let ok=true;
+          if(prev!==null && v<prev) ok=false;
+          if(next!==null && v>next) ok=false;
+          if(!ok) tok.style.boxShadow = "0 0 0 3px rgba(220,38,38,.14) inset";
+          else tok.style.boxShadow = "";
+        }
 
-        stripEl.appendChild(tok);
+        // Custom drag (touch + mouse): token -> pairSlot
+        attachDragToken(tok);
+
+        numsEl.appendChild(tok);
       }
+    }
 
-      // marcamos visualmente tokens “fuera de orden” cuando hay valores vecinos
-      for(let i=0;i<16;i++){
-        const tok=stripEl.children[i];
-        const v=advStripValueAt(i);
-        if(v===null) continue;
-        const prev = i>0 ? advStripValueAt(i-1) : null;
-        const next = i<15 ? advStripValueAt(i+1) : null;
-        let ok=true;
-        if(prev!==null && v<prev) ok=false;
-        if(next!==null && v>next) ok=false;
-        tok.classList.toggle("badOrder", !ok);
-      }
-
-      // -------- Pair cards
-      const cardsEl=document.getElementById("pairCards");
-      const usage=advCardUsage();
+    function renderPairs(){
+      pairsEl.innerHTML = "";
+      const usage = cardUsage();
 
       for(let c=0;c<8;c++){
-        const card=document.createElement("div");
-        card.className="pairCard";
-        card.dataset.cardId=String(c);
-        card.draggable = advCardReady(c);
-
-        card.addEventListener("dragstart",(e)=>{
-          if(!advCardReady(c)){ e.preventDefault(); return; }
-          e.dataTransfer.clearData();
-          e.dataTransfer.setData(DRAG_PAIR, String(c));
-          e.dataTransfer.setData("text/plain", String(c));
-          e.dataTransfer.effectAllowed="copy";
-        });
-
-        const aIdx=ADV.state.pairCards[c].a;
-        const bIdx=ADV.state.pairCards[c].b;
-        const aVal = (aIdx===null) ? null : advStripValueAt(aIdx);
-        const bVal = (bIdx===null) ? null : advStripValueAt(bIdx);
+        const card = document.createElement("div");
+        card.className = "pairCard";
+        card.dataset.kind = "card";
+        card.dataset.cardId = String(c);
 
         const addOn = usage[c].add>0;
         const mulOn = usage[c].mul>0;
 
+        const aIdx = S.cards[c].a;
+        const bIdx = S.cards[c].b;
+        const aVal = (aIdx===null) ? null : stripValueAt(aIdx);
+        const bVal = (bIdx===null) ? null : stripValueAt(bIdx);
+
         card.innerHTML = `
-          <div class="pairTop">
-            <div class="marks">
-              <span class="mark add ${addOn? "" : "off"} ${usage[c].add>1?"over":""}">+</span>
-              <span class="mark mul ${mulOn? "" : "off"} ${usage[c].mul>1?"over":""}">×</span>
-            </div>
-            <div class="mini">${LANG==="es"?"Tarjeta":"Card"} ${c+1}</div>
-          </div>
           <div class="pairSlots">
-            <div class="pairSlot ${aIdx!==null?"filled":""}" data-slot="a">${aVal!==null? `<span class="chip small">${aVal}</span>` : ""}</div>
-            <div class="pairSlot ${bIdx!==null?"filled":""}" data-slot="b">${bVal!==null? `<span class="chip small">${bVal}</span>` : ""}</div>
+            <div class="pairSlot ${aIdx!==null ? "filled":""}" data-slot="a">${aVal??""}</div>
+            <div class="pairSep">·</div>
+            <div class="pairSlot ${bIdx!==null ? "filled":""}" data-slot="b">${bVal??""}</div>
+          </div>
+          <div class="marks">
+            <div class="mark add ${addOn?"on":""} ${usage[c].add>1?"over":""}">+</div>
+            <div class="mark mul ${mulOn?"on":""} ${usage[c].mul>1?"over":""}">×</div>
           </div>
         `;
-        cardsEl.appendChild(card);
 
-        // drop tokens into slots
+        // Drop target for tokens on each slot
         card.querySelectorAll(".pairSlot").forEach(slot=>{
-          const which=slot.getAttribute("data-slot"); // a/b
+          const which = slot.getAttribute("data-slot"); // a/b
+          attachDropPairSlot(slot, c, which);
 
-          slot.addEventListener("dragover",(e)=>{
-            e.preventDefault();
-            e.stopPropagation();
-            slot.classList.add("dragover");
-            e.dataTransfer.dropEffect="copy";
+          // FIX #5: doble click / doble tap en la tarjeta => desvincula
+          let lastTap=0;
+          slot.addEventListener("click", ()=>{
+            const now = Date.now();
+            if(now - lastTap < 320){
+              // double tap
+              if(S.cards[c][which]!==null){
+                S.cards[c][which]=null;
+                renderAll();
+              }
+            }
+            lastTap = now;
           });
-          slot.addEventListener("dragleave",()=>slot.classList.remove("dragover"));
-          slot.addEventListener("drop",(e)=>{
-            e.preventDefault();
-            e.stopPropagation();
-            slot.classList.remove("dragover");
-
-            const raw=e.dataTransfer.getData(DRAG_TOKEN) || e.dataTransfer.getData("text/plain");
-            const stripIdx=parseInt(raw,10);
-            if(Number.isNaN(stripIdx)) return;
-
-            if(advStripValueAt(stripIdx)===null){ showToast(t("toastNeedNumber")); return; }
-            if(advStripTokenUsed(stripIdx)){ showToast(LANG==="es"?"Ese token ya está usado.":"That token is already used."); return; }
-
-            // asignar
-            ADV.state.pairCards[c][which] = stripIdx;
-            renderAll();
-          });
-
-          // dblclick en slot lleno => liberar token
           slot.addEventListener("dblclick", ()=>{
-            if(ADV.state.pairCards[c][which]===null) return;
-            ADV.state.pairCards[c][which]=null;
-            renderAll();
+            if(S.cards[c][which]!==null){
+              S.cards[c][which]=null;
+              renderAll();
+            }
           });
         });
+
+        // Drag card -> grid cell (touch + mouse)
+        attachDragCard(card);
+
+        pairsEl.appendChild(card);
       }
     }
 
-    function renderAdvGrid(){
-      gridEl.innerHTML="";
-      for(let i=0;i<16;i++){
-        const target=ADV.puzzle.cells[i].target;
-        const s=ADV.state.grid[i];
+    function renderGrid(){
+      // cuando reveal ON, habilitar scroll en gridWrap
+      gridWrap.classList.toggle("scrollable", reveal);
+      appRoot.classList.toggle("revealOn", reveal);
 
-        const computed=advCellComputedValue(i);
+      gridEl.innerHTML = "";
+
+      for(let i=0;i<16;i++){
+        const cellDef = S.solution.cells[i]; // targets (mismos targets siempre)
+        const target = cellDef.target;
+        const g = S.grid[i];
+
+        const computed = gridComputed(i);
         const isComplete = computed!==null;
         const isCorrect = isComplete && computed===target;
 
-        const cell=document.createElement("div");
-        cell.className="cell";
-        if(isComplete) cell.classList.add(isCorrect ? "correct" : "incorrect");
+        const cell = document.createElement("div");
+        cell.className = "cell" + (isComplete ? (isCorrect ? " ok":" bad") : "");
+        cell.dataset.kind = "gridCell";
+        cell.dataset.cellIdx = String(i);
 
-        let badgeClass="none", badgeText="?";
-        if(s.op==="+"){ badgeClass="add"; badgeText="+"; }
-        else if(s.op==="x"){ badgeClass="mul"; badgeText="×"; }
+        let opClass="", opText="—";
+        if(g.op==="+"){ opClass="add"; opText="+"; }
+        else if(g.op==="x"){ opClass="mul"; opText="×"; }
 
-        cell.addEventListener("dragover",(e)=>{ e.preventDefault(); cell.classList.add("dragover"); e.dataTransfer.dropEffect="copy"; });
-        cell.addEventListener("dragleave",()=>cell.classList.remove("dragover"));
-        cell.addEventListener("drop",(e)=>{
-          e.preventDefault(); cell.classList.remove("dragover");
-          const raw=e.dataTransfer.getData(DRAG_PAIR) || e.dataTransfer.getData("text/plain");
-          const cardId=parseInt(raw,10);
-          if(Number.isNaN(cardId)) return;
-          if(!advCardReady(cardId)) return;
-          s.cardId=cardId;
-          renderAll();
-        });
-
-        cell.addEventListener("click", ()=>{
-          if(s.cardId===null){ showToast(t("toastNeedPair")); return; }
-          s.op="x"; renderAll();
-        });
-        cell.addEventListener("contextmenu",(e)=>{
-          e.preventDefault();
-          if(s.cardId===null){ showToast(t("toastNeedPair")); return; }
-          s.op="+"; renderAll();
-        });
-        cell.addEventListener("dblclick", ()=>{
-          ADV.state.grid[i]={cardId:null,op:null};
-          renderAll();
-        });
-
-        let entry = ``;
-        if(s.cardId===null){
-          entry = `<div class="slot" style="border-top:1px dashed rgba(255,255,255,.12); padding-top:10px"></div>`;
-        }else{
-          const {a,b}=advCardValues(s.cardId);
-          const sym = (s.op===null) ? "?" : (s.op==="x" ? "×" : "+");
-          entry = `
-            <div class="slot" style="border-top:1px dashed rgba(255,255,255,.12); padding-top:10px">
-              <span style="font-weight:900">${a??"_"} ${sym} ${b??"_"}</span>
-            </div>
-          `;
+        // expression line
+        let expr="—";
+        if(g.cardId!==null){
+          const {a,b}=cardValues(g.cardId);
+          const sym = g.op===null ? "—" : (g.op==="+"?"+":"×");
+          expr = `${a??"—"} ${sym} ${b??"—"}`;
         }
 
-        let revealLine="";
+        // reveal line shows the generated solution for THAT cell (one possible)
+        let solLine = "";
         if(reveal){
-          const sol=ADV.puzzle.cells[i];
-          const [i1,i2]=ADV.puzzle.solution.solPairs[sol.pairId];
-          const a=ADV.puzzle.solution.fullStrip[i1];
-          const b=ADV.puzzle.solution.fullStrip[i2];
-          const sym=sol.op==="x" ? "×" : "+";
-          revealLine = `<div style="margin-top:8px;color:rgba(169,183,214,.9);font-size:12px">
-            ${t("solutionLabel")} <b style="color:var(--ink)">${a} ${sym} ${b}</b>
-          </div>`;
+          const sol = S.solution.cells[i];
+          const [i1,i2] = S.solution.solPairs[sol.pairId];
+          const a = S.solution.fullStrip[i1];
+          const b = S.solution.fullStrip[i2];
+          const sym = (sol.op==="x") ? "×" : "+";
+          solLine = `Sol: ${a} ${sym} ${b}`;
         }
 
         cell.innerHTML = `
-          <div class="topRow">
+          <div class="cellTop">
             <div class="target">${target}</div>
-            <div class="opBadge ${badgeClass}">${badgeText}</div>
+            <div class="opPill ${opClass}">${opText}</div>
           </div>
-          ${entry}
-          ${revealLine}
+          <div class="expr">${expr}</div>
+          <div class="solLine">${solLine}</div>
         `;
+
+        // Tap cycles op: null -> + -> x -> null
+        cell.addEventListener("click", ()=>{
+          if(g.cardId===null){
+            toast(t("toastNeedCard"));
+            return;
+          }
+          if(g.op===null) g.op="+";
+          else if(g.op==="+") g.op="x";
+          else g.op=null;
+          renderAll();
+        });
+
+        // clear on double tap / dblclick
+        let lastTap=0;
+        cell.addEventListener("click", ()=>{
+          const now=Date.now();
+          if(now-lastTap<320){
+            S.grid[i]={cardId:null, op:null};
+            renderAll();
+          }
+          lastTap=now;
+        });
+        cell.addEventListener("dblclick", ()=>{
+          S.grid[i]={cardId:null, op:null};
+          renderAll();
+        });
+
+        // drop card
+        attachDropGridCell(cell, i);
+
         gridEl.appendChild(cell);
       }
     }
 
-    function advCheck(){
-      // 1) huecos completos
+    // =========================================================
+    // Victory: “cualquier solución válida”
+    // =========================================================
+    function checkVictory(showToasts=true){
+      // 1) blanks filled
       for(let i=0;i<16;i++){
-        if(ADV.puzzle.maskedStrip[i].isBlank && advStripValueAt(i)===null){
-          showToast(t("toastMissingHoles"));
-          statusEl.innerHTML = `<span class="err"><strong>${LANG==="es"?"Incompleto":"Incomplete"}:</strong> ${LANG==="es"?"completá los huecos del strip":"fill strip blanks"}.</span>`;
-          return;
+        if(S.strip[i].isBlank && stripValueAt(i)===null){
+          if(showToasts) toast(t("toastMissing"));
+          return false;
         }
       }
-
-      // 2) orden ascendente
-      const vals=Array.from({length:16},(_,i)=>advStripValueAt(i));
-      for(let i=1;i<16;i++){
-        if(vals[i] < vals[i-1]){
-          showToast(t("toastOrder"));
-          statusEl.innerHTML = `<span class="err"><strong>${LANG==="es"?"Error":"Error"}:</strong> ${LANG==="es"?"el strip debe ser ascendente":"strip must be ascending"}.</span>`;
-          return;
+      // 2) strip ascending
+      if(!orderOK()){
+        if(showToasts) toast(t("toastStripOrder"));
+        return false;
+      }
+      // 3) pair cards full (16 slots)
+      const filledPairSlots = S.cards.reduce((acc,c)=> acc + (c.a!==null?1:0) + (c.b!==null?1:0), 0);
+      if(filledPairSlots < 16){
+        if(showToasts) toast(t("needFill"));
+        return false;
+      }
+      // 4) grid complete
+      const filledGrid = S.grid.filter(g=>g.cardId!==null && g.op!==null).length;
+      if(filledGrid < 16){
+        if(showToasts) toast(t("toastMissing"));
+        return false;
+      }
+      // 5) each cell hits target
+      for(let i=0;i<16;i++){
+        const target = S.solution.cells[i].target;
+        const computed = gridComputed(i);
+        if(computed !== target){
+          if(showToasts) toast(t("statusErr"));
+          return false;
         }
       }
-
-      // 3) cards completas (16 slots llenos)
-      const filledPairSlots = ADV.state.pairCards.reduce((acc,c)=>acc + (c.a!==null?1:0) + (c.b!==null?1:0), 0);
-      if(filledPairSlots<16){
-        showToast(t("toastMissingPairs"));
-        statusEl.innerHTML = `<span class="err"><strong>${LANG==="es"?"Incompleto":"Incomplete"}:</strong> ${LANG==="es"?"armá los 8 pares":"build the 8 pairs"}.</span>`;
-        return;
+      // 6) each card used exactly once in + and once in ×
+      const usage = cardUsage();
+      const okUsage = usage.every(u=>u.add===1 && u.mul===1);
+      if(!okUsage){
+        if(showToasts) toast(t("statusErr"));
+        return false;
       }
 
-      // 4) grilla completa
-      const incomplete = ADV.state.grid.some(s=>s.cardId===null || s.op===null);
-      if(incomplete){
-        showToast(t("toastMissingCells"));
-        statusEl.innerHTML = `<span class="err"><strong>${LANG==="es"?"Incompleto":"Incomplete"}:</strong> ${LANG==="es"?"faltan tarjetas y/o operación":"missing cards and/or operations"}.</span>`;
-        return;
-      }
-
-      // 5) celdas correctas vs targets
-      let okCells=true;
-      for(let i=0;i<16;i++){
-        const computed=advCellComputedValue(i);
-        if(computed!==ADV.puzzle.cells[i].target){ okCells=false; break; }
-      }
-
-      // 6) uso de tarjetas: +1 y ×1 cada una
-      const usage=advCardUsage();
-      const okUsage=usage.every(u=>u.add===1 && u.mul===1);
-
-      // 7) huecos correctos vs solución (solo blanks)
-      let okBlanks=true;
-      for(let i=0;i<16;i++){
-        if(ADV.puzzle.maskedStrip[i].isBlank){
-          if(vals[i] !== ADV.puzzle.solution.fullStrip[i]) { okBlanks=false; break; }
-        }
-      }
-
-      if(okCells && okUsage && okBlanks){
-        showToast(t("toastPerfect"));
-        statusEl.innerHTML = `<span class="ok"><strong>${LANG==="es"?"Correcto":"Correct"}:</strong> ${LANG==="es"?"grilla OK, huecos OK, usos OK":"grid OK, blanks OK, usage OK"}.</span>`;
-        confettiBurst();
-      }else{
-        showToast(t("toastErrors"));
-        const d=[];
-        if(!okCells) d.push(LANG==="es"?"alguna celda no coincide":"some cell doesn't match");
-        if(!okUsage) d.push(LANG==="es"?"uso de tarjetas incorrecto":"card usage is wrong");
-        if(!okBlanks) d.push(LANG==="es"?"algún hueco está mal":"a blank is wrong");
-        statusEl.innerHTML = `<span class="err"><strong>${LANG==="es"?"Incorrecto":"Incorrect"}:</strong> ${d.join(LANG==="es"?" y ":" and ")}.</span>`;
-      }
+      // WIN
+      setStatus(t("statusWin"));
+      if(showToasts) toast(t("toastWin"));
+      confettiBurst();
+      return true;
     }
 
     // =========================================================
-    // Confetti (victory)
+    // UI actions
+    // =========================================================
+    function setStatus(msg){
+      miniStatus.textContent = msg;
+    }
+    function toast(msg){
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      clearTimeout(toastEl._t);
+      toastEl._t = setTimeout(()=>toastEl.classList.remove("show"), 1400);
+    }
+
+    btnNew.addEventListener("click", newGame);
+
+    btnReveal.addEventListener("click", ()=>{
+      reveal = !reveal;
+      btnReveal.classList.toggle("toggleOn", reveal);
+      if(reveal) toast(t("toastRevealOn"));
+      else toast(t("toastRevealOff"));
+      renderAll();
+    });
+
+    btnHelp.addEventListener("click", ()=>{
+      back.classList.add("show");
+    });
+    function closeModal(){ back.classList.remove("show"); }
+    btnClose.addEventListener("click", closeModal);
+    btnClose2.addEventListener("click", closeModal);
+    back.addEventListener("click", (e)=>{ if(e.target===back) closeModal(); });
+    document.addEventListener("keydown",(e)=>{ if(e.key==="Escape") closeModal(); });
+
+    btnLang.addEventListener("click", ()=>{
+      LANG = (LANG==="es") ? "en" : "es";
+      renderAll();
+    });
+
+    // Dificultad “al revés”: 0 = 0 huecos (más fácil)
+    diffRange.addEventListener("input", ()=>{
+      S.difficulty = parseInt(diffRange.value,10);
+      diffVal.textContent = String(S.difficulty);
+      numsHint.textContent = t("numsHint", S.difficulty);
+    });
+    diffRange.addEventListener("change", ()=>{
+      // al cambiar dificultad, generamos puzzle nuevo
+      newGame();
+    });
+
+    // =========================================================
+    // Drag system (touch + mouse)
+    //   - token drag -> pairSlot
+    //   - card drag  -> grid cell
+    // Requirements:
+    //  3) input no pierde foco tras 1 dígito: solucionado con restoreFocus
+    //  4) editable tokens se pueden arrastrar clickeando en cualquier parte:
+    //     implementamos drag propio en el wrapper .numTok (incluye input).
+    // =========================================================
+    const ghost = document.getElementById("ghost");
+    let drag = null; // {type:"token"/"card", ...}
+
+    function point(e){
+      if(e.touches && e.touches[0]) return {x:e.touches[0].clientX, y:e.touches[0].clientY};
+      return {x:e.clientX, y:e.clientY};
+    }
+
+    function attachDragToken(tok){
+      const stripIdx = parseInt(tok.dataset.stripIdx,10);
+
+      // Start drag on pointerdown (also works when user taps on input area)
+      tok.addEventListener("pointerdown", (e)=>{
+        // if empty value, can't drag
+        const v = stripValueAt(stripIdx);
+        if(v===null){ return; }
+        if(stripTokenUsed(stripIdx)){ return; }
+
+        // Allow editing: if it's an input and user just taps, don't drag.
+        // We'll only start drag if movement threshold is exceeded.
+        const start = { ...point(e) };
+        let moved = false;
+
+        function onMove(ev){
+          const p = point(ev);
+          const dx = p.x - start.x, dy = p.y - start.y;
+          if(!moved && (dx*dx + dy*dy) > 36){
+            moved = true;
+
+            // If dragging from an input, blur it so it doesn't “cortar” el drag
+            const inp = tok.querySelector("input");
+            if(inp && document.activeElement === inp) inp.blur();
+
+            drag = { type:"token", stripIdx };
+            ghost.textContent = String(stripValueAt(stripIdx));
+            ghost.style.transform = `translate(${p.x+10}px, ${p.y+10}px)`;
+            highlightDropTargets("token");
+            ev.preventDefault();
+          }
+          if(moved && drag){
+            ghost.style.transform = `translate(${p.x+10}px, ${p.y+10}px)`;
+            updateHotTarget(p.x, p.y);
+            ev.preventDefault();
+          }
+        }
+
+        function onUp(ev){
+          window.removeEventListener("pointermove", onMove, {passive:false});
+          window.removeEventListener("pointerup", onUp);
+          if(drag){
+            const p = point(ev);
+            performDrop(p.x, p.y);
+          }
+          cleanupDrag();
+        }
+
+        window.addEventListener("pointermove", onMove, {passive:false});
+        window.addEventListener("pointerup", onUp);
+      });
+
+      // Desktop HTML5 drag (fallback)
+      tok.draggable = true;
+      tok.addEventListener("dragstart",(e)=>{
+        const v = stripValueAt(stripIdx);
+        if(v===null || stripTokenUsed(stripIdx)){
+          e.preventDefault();
+          return;
+        }
+        e.dataTransfer.setData("text/plain", `token:${stripIdx}`);
+        e.dataTransfer.effectAllowed = "copy";
+      });
+    }
+
+    function attachDropPairSlot(slot, cardId, which){
+      // HTML5 drop fallback
+      slot.addEventListener("dragover",(e)=>{ e.preventDefault(); });
+      slot.addEventListener("drop",(e)=>{
+        e.preventDefault();
+        const raw = e.dataTransfer.getData("text/plain") || "";
+        if(raw.startsWith("token:")){
+          const stripIdx = parseInt(raw.slice(6),10);
+          assignTokenToSlot(stripIdx, cardId, which);
+        }
+      });
+    }
+
+    function attachDragCard(card){
+      const cardId = parseInt(card.dataset.cardId,10);
+
+      card.addEventListener("pointerdown",(e)=>{
+        if(!cardReady(cardId)) return;
+
+        const start = { ...point(e) };
+        let moved = false;
+
+        function onMove(ev){
+          const p = point(ev);
+          const dx = p.x - start.x, dy = p.y - start.y;
+          if(!moved && (dx*dx + dy*dy) > 36){
+            moved = true;
+            drag = { type:"card", cardId };
+            ghost.textContent = "▦";
+            ghost.style.transform = `translate(${p.x+10}px, ${p.y+10}px)`;
+            highlightDropTargets("card");
+            ev.preventDefault();
+          }
+          if(moved && drag){
+            ghost.style.transform = `translate(${p.x+10}px, ${p.y+10}px)`;
+            updateHotTarget(p.x, p.y);
+            ev.preventDefault();
+          }
+        }
+        function onUp(ev){
+          window.removeEventListener("pointermove", onMove, {passive:false});
+          window.removeEventListener("pointerup", onUp);
+          if(drag){
+            const p = point(ev);
+            performDrop(p.x, p.y);
+          }
+          cleanupDrag();
+        }
+
+        window.addEventListener("pointermove", onMove, {passive:false});
+        window.addEventListener("pointerup", onUp);
+      });
+
+      // HTML5 fallback
+      card.draggable = true;
+      card.addEventListener("dragstart",(e)=>{
+        if(!cardReady(cardId)){ e.preventDefault(); return; }
+        e.dataTransfer.setData("text/plain", `card:${cardId}`);
+        e.dataTransfer.effectAllowed = "copy";
+      });
+    }
+
+    function attachDropGridCell(cell, cellIdx){
+      cell.addEventListener("dragover",(e)=>{ e.preventDefault(); });
+      cell.addEventListener("drop",(e)=>{
+        e.preventDefault();
+        const raw = e.dataTransfer.getData("text/plain") || "";
+        if(raw.startsWith("card:")){
+          const cardId = parseInt(raw.slice(5),10);
+          if(!cardReady(cardId)){ toast(t("toastCardNotReady")); return; }
+          S.grid[cellIdx].cardId = cardId;
+          // no seteamos op automáticamente: el usuario toca para elegir
+          renderAll();
+        }
+      });
+    }
+
+    function assignTokenToSlot(stripIdx, cardId, which){
+      if(stripValueAt(stripIdx)===null){ toast(t("toastNeedNumber")); return; }
+      if(stripTokenUsed(stripIdx)){ toast(t("toastTokenUsed")); return; }
+
+      S.cards[cardId][which] = stripIdx;
+      renderAll();
+    }
+
+    // Drag helpers
+    function highlightDropTargets(kind){
+      clearHot();
+      if(kind==="token"){
+        document.querySelectorAll(".pairSlot").forEach(el=>el.classList.add("dropTarget"));
+      }else{
+        document.querySelectorAll(".cell").forEach(el=>el.classList.add("dropTarget"));
+      }
+    }
+    function clearHot(){
+      document.querySelectorAll(".dropHot").forEach(el=>el.classList.remove("dropHot"));
+    }
+
+    function elementFromPointSafe(x,y){
+      // Sometimes ghost overlays; temporarily hide it
+      const old = ghost.style.display;
+      ghost.style.display = "none";
+      const el = document.elementFromPoint(x,y);
+      ghost.style.display = old;
+      return el;
+    }
+
+    function updateHotTarget(x,y){
+      clearHot();
+      const el = elementFromPointSafe(x,y);
+      if(!el) return;
+
+      if(drag?.type==="token"){
+        const slot = el.closest(".pairSlot");
+        if(slot) slot.classList.add("dropHot");
+      }else if(drag?.type==="card"){
+        const cell = el.closest(".cell");
+        if(cell) cell.classList.add("dropHot");
+      }
+    }
+
+    function performDrop(x,y){
+      const el = elementFromPointSafe(x,y);
+      if(!el) return;
+
+      if(drag.type==="token"){
+        const slot = el.closest(".pairSlot");
+        if(!slot) return;
+        const cardEl = slot.closest(".pairCard");
+        if(!cardEl) return;
+        const cardId = parseInt(cardEl.dataset.cardId,10);
+        const which = slot.getAttribute("data-slot");
+        assignTokenToSlot(drag.stripIdx, cardId, which);
+      }else if(drag.type==="card"){
+        const cell = el.closest(".cell");
+        if(!cell) return;
+        const cellIdx = parseInt(cell.dataset.cellIdx,10);
+        if(!cardReady(drag.cardId)){ toast(t("toastCardNotReady")); return; }
+        S.grid[cellIdx].cardId = drag.cardId;
+        renderAll();
+      }
+    }
+
+    function cleanupDrag(){
+      drag = null;
+      ghost.style.transform = "translate(-9999px,-9999px)";
+      clearHot();
+      document.querySelectorAll(".dropTarget").forEach(el=>el.classList.remove("dropTarget"));
+    }
+
+    // =========================================================
+    // Confetti
     // =========================================================
     const confCanvas = document.getElementById("confetti");
     const ctx = confCanvas.getContext("2d");
     let confettiParts = [];
-    let confettiRunning = false;
+    let confettiRunning=false;
 
     function resizeConfetti(){
       confCanvas.width = window.innerWidth;
@@ -1480,34 +1490,33 @@
     resizeConfetti();
 
     function confettiBurst(){
-      const W = confCanvas.width, H = confCanvas.height;
-      const n = 180;
-      const originX = W/2, originY = H*0.20;
+      const W=confCanvas.width, H=confCanvas.height;
+      const n=160;
+      const ox=W/2, oy=H*0.18;
       for(let i=0;i<n;i++){
-        const ang = (Math.random()*Math.PI*2);
+        const ang = Math.random()*Math.PI*2;
         const spd = 3 + Math.random()*7;
         confettiParts.push({
-          x: originX,
-          y: originY,
-          vx: Math.cos(ang)*spd,
-          vy: Math.sin(ang)*spd + 2,
-          g: 0.15 + Math.random()*0.18,
-          w: 4 + Math.random()*6,
-          h: 6 + Math.random()*10,
-          r: Math.random()*Math.PI,
-          vr: (Math.random()-0.5)*0.25,
-          life: 140 + Math.random()*60,
-          alpha: 1
+          x:ox, y:oy,
+          vx:Math.cos(ang)*spd,
+          vy:Math.sin(ang)*spd + 2,
+          g:0.14 + Math.random()*0.20,
+          w:4 + Math.random()*6,
+          h:6 + Math.random()*10,
+          r:Math.random()*Math.PI,
+          vr:(Math.random()-0.5)*0.25,
+          life:140 + Math.random()*70,
+          a:1
         });
       }
       if(!confettiRunning){
-        confettiRunning = true;
+        confettiRunning=true;
         requestAnimationFrame(confettiTick);
       }
     }
 
     function confettiTick(){
-      const W = confCanvas.width, H = confCanvas.height;
+      const W=confCanvas.width, H=confCanvas.height;
       ctx.clearRect(0,0,W,H);
 
       confettiParts = confettiParts.filter(p=>p.life>0);
@@ -1517,111 +1526,101 @@
         p.x += p.vx;
         p.y += p.vy;
         p.r += p.vr;
-        if(p.life < 40) p.alpha = Math.max(0, p.life/40);
+        if(p.life<40) p.a = Math.max(0,p.life/40);
 
         ctx.save();
-        ctx.globalAlpha = p.alpha;
-        ctx.translate(p.x, p.y);
+        ctx.globalAlpha=p.a;
+        ctx.translate(p.x,p.y);
         ctx.rotate(p.r);
 
-        // colores simples (sin setear paleta fija): random por frame suave
-        const hue = (p.x*0.3 + p.y*0.2) % 360;
-        ctx.fillStyle = `hsl(${hue}, 90%, 60%)`;
-        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        // Paleta cercana a tu esquema (verde/amarillo/gris) pero variada:
+        const pick = Math.random();
+        let fill="#94a3b8";
+        if(pick<0.45) fill="rgba(52,168,83,.92)";
+        else if(pick<0.85) fill="rgba(244,180,0,.92)";
+        ctx.fillStyle=fill;
+
+        ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
         ctx.restore();
       }
 
-      if(confettiParts.length>0){
+      if(confettiParts.length){
         requestAnimationFrame(confettiTick);
       }else{
-        confettiRunning = false;
+        confettiRunning=false;
         ctx.clearRect(0,0,W,H);
       }
     }
 
     // =========================================================
-    // Mode switching + render
+    // PWA: manifest + service worker embebidos
     // =========================================================
-    function setMode(next){
-      mode=next;
-      reveal=false;
-      btnReveal.textContent=t("revealBtn");
+    (function setupPWA(){
+      const manifest = {
+        name: "Tetonor",
+        short_name: "Tetonor",
+        start_url: ".",
+        display: "standalone",
+        background_color: "#ffffff",
+        theme_color: "#ffffff",
+        icons: [
+          // Icono simple (data URI SVG)
+          {
+            src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='192' height='192'%3E%3Crect width='192' height='192' rx='36' fill='%23ffffff'/%3E%3Crect x='14' y='14' width='164' height='164' rx='30' fill='%230b0f1a' opacity='.06'/%3E%3Ctext x='96' y='112' text-anchor='middle' font-family='Arial' font-size='56' font-weight='900' fill='%230b0f1a'%3ET%3C/text%3E%3C/svg%3E",
+            sizes: "192x192",
+            type: "image/svg+xml"
+          }
+        ]
+      };
+      const manifestUrl = "data:application/manifest+json," + encodeURIComponent(JSON.stringify(manifest));
+      document.getElementById("manifestLink").href = manifestUrl;
 
-      tabSimple.classList.toggle("active", mode==="simple");
-      tabAdv.classList.toggle("active", mode==="adv");
-      tabSimple.setAttribute("aria-selected", mode==="simple" ? "true":"false");
-      tabAdv.setAttribute("aria-selected", mode==="adv" ? "true":"false");
+      // Service worker via Blob URL
+      const swCode = `
+        const CACHE = "tetonor-mobile-v1";
+        self.addEventListener("install", (e) => {
+          e.waitUntil((async()=>{
+            const cache = await caches.open(CACHE);
+            // cache the root shell (single file)
+            await cache.addAll(["./"]);
+            self.skipWaiting();
+          })());
+        });
+        self.addEventListener("activate", (e) => {
+          e.waitUntil((async()=>{
+            const keys = await caches.keys();
+            await Promise.all(keys.map(k => k===CACHE ? null : caches.delete(k)));
+            self.clients.claim();
+          })());
+        });
+        self.addEventListener("fetch", (e) => {
+          e.respondWith((async()=>{
+            const cached = await caches.match(e.request, {ignoreSearch:true});
+            if(cached) return cached;
+            try{
+              const res = await fetch(e.request);
+              const cache = await caches.open(CACHE);
+              cache.put(e.request, res.clone()).catch(()=>{});
+              return res;
+            }catch(err){
+              return cached || new Response("Offline", {status: 503});
+            }
+          })());
+        });
+      `;
+      const swBlob = new Blob([swCode], {type:"text/javascript"});
+      const swUrl = URL.createObjectURL(swBlob);
 
-      modeTitle.textContent = (mode==="simple") ? t("modeSimple") : t("modeAdv");
-      newGame();
-    }
-
-    tabSimple.addEventListener("click", ()=>setMode("simple"));
-    tabAdv.addEventListener("click", ()=>setMode("adv"));
-
-    function renderStatus(){
-      if(mode==="simple"){
-        const filled = SIMPLE.state.filter(s=>s.aTok!==null && s.bTok!==null && s.op!==null).length;
-        statusEl.innerHTML = `${LANG==="es"?"Progreso":"Progress"}: <strong>${filled}/16</strong>.`;
-      }else{
-        const blanks = ADV.puzzle.maskedStrip.filter(x=>x.isBlank).length;
-        const filledBlanks = ADV.puzzle.maskedStrip.filter((x,i)=>x.isBlank && advStripValueAt(i)!==null).length;
-        const filledPairSlots = ADV.state.pairCards.reduce((acc,c)=>acc + (c.a!==null?1:0) + (c.b!==null?1:0), 0);
-        const filledGrid = ADV.state.grid.filter(s=>s.cardId!==null && s.op!==null).length;
-        statusEl.innerHTML = t("statusAdv", filledBlanks, blanks, filledPairSlots, filledGrid);
+      if("serviceWorker" in navigator){
+        navigator.serviceWorker.register(swUrl).catch(()=>{});
       }
-    }
-
-    function renderAll(){
-      if(mode==="simple"){
-        renderSimpleGrid();
-        renderSimplePanel();
-      }else{
-        renderAdvGrid();
-        renderAdvPanel();
-      }
-      renderStatus();
-    }
+    })();
 
     // =========================================================
-    // Actions
+    // Boot
     // =========================================================
-    function newGame(){
-      if(mode==="simple"){
-        SIMPLE.puzzle = simpleGeneratePuzzle();
-        simpleResetState();
-      }else{
-        ADV.puzzle = advGeneratePuzzle();
-        advResetState();
-      }
-      renderAll();
-      showToast(t("toastNew"));
-    }
-
-    function resetGame(){
-      if(mode==="simple") simpleResetState();
-      else advResetState();
-      renderAll();
-      showToast(t("toastReset"));
-    }
-
-    function checkGame(){
-      if(mode==="simple") simpleCheck();
-      else advCheck();
-    }
-
-    btnNew.addEventListener("click", newGame);
-    btnReset.addEventListener("click", resetGame);
-    btnCheck.addEventListener("click", checkGame);
-    btnReveal.addEventListener("click", ()=>{
-      reveal = !reveal;
-      btnReveal.textContent = reveal ? t("hideBtn") : t("revealBtn");
-      renderAll();
-    });
-
-    // boot
-    applyI18n();
-    setMode("adv");
+    diffVal.textContent = String(S.difficulty);
+    newGame();
   </script>
 </body>
 </html>
