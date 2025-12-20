@@ -51,8 +51,8 @@
       height:100svh;
       display:flex;
       flex-direction:column;
-      padding:10px;
-      gap:10px;
+      padding:8px;
+      gap:8px;
     }
 
     .topbar{
@@ -60,7 +60,7 @@
       align-items:center;
       justify-content:space-between;
       gap:8px;
-      padding:8px 10px;
+      padding:6px 9px;
       border-radius: var(--r-lg);
       background: rgba(255,255,255,.85);
       backdrop-filter: blur(10px);
@@ -111,7 +111,7 @@
       border-radius: 12px;
       padding:6px 9px;
       font-weight:800;
-      font-size:11.5px;
+      font-size:11px;
       cursor:pointer;
       box-shadow: 0 4px 16px rgba(15,23,42,.06);
       display:flex;
@@ -161,7 +161,7 @@
     .main{
       display:flex;
       flex-direction:column;
-      gap:10px;
+      gap:8px;
       flex:1;
       min-height:0;
     }
@@ -172,32 +172,27 @@
       background: rgba(255,255,255,.9);
       border:1px solid rgba(15,23,42,.08);
       box-shadow: var(--shadow);
-      padding:8px;
+      padding:6px;
       min-height:0;
     }
     .panelHead{
       display:flex;
       align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:8px;
-    }
-    .panelHead .title{
-      font-weight:900;
-      font-size:13px;
-      color: rgba(15,23,42,.92);
+      justify-content:flex-end;
+      gap:8px;
+      margin-bottom:6px;
     }
     .panelHead .progress{
-      font-size:12px;
+      font-size:11.5px;
       color: var(--muted);
       font-weight:800;
     }
 
     .gridWrap{
       border:2px solid #111;
-      border-radius: 16px;
+      border-radius: 14px;
       background:#fff;
-      padding:6px;
+      padding:4px;
       min-height:0;
       overflow:hidden; /* default: sin scroll */
     }
@@ -208,19 +203,19 @@
     .grid{
       display:grid;
       grid-template-columns: repeat(4, 1fr);
-      gap:8px;
+      gap:6px;
     }
 
     .cell{
       border:2px solid #111;
-      border-radius: 14px;
+      border-radius: 12px;
       background:#fff;
-      padding:8px 8px;
-      min-height:68px;
+      padding:6px 6px;
+      min-height:60px;
       display:flex;
       flex-direction:column;
       justify-content:space-between;
-      gap:6px;
+      gap:5px;
       position:relative;
       user-select:none;
       touch-action:none;
@@ -234,17 +229,17 @@
     }
     .target{
       font-weight:1000;
-      font-size:17px;
+      font-size:16px;
       line-height:1;
     }
 
     .opPill{
-      width:28px; height:28px;
-      border-radius: 10px;
+      width:26px; height:26px;
+      border-radius: 9px;
       display:grid;
       place-items:center;
       font-weight:1000;
-      font-size:14px;
+      font-size:13px;
       border:1px solid rgba(15,23,42,.12);
       background: var(--chip);
       color:#111;
@@ -262,11 +257,11 @@
     }
 
     .expr{
-      font-size:12px;
+      font-size:11.5px;
       color: rgba(15,23,42,.85);
       font-weight:900;
-      padding:6px 8px;
-      border-radius: 12px;
+      padding:5px 7px;
+      border-radius: 11px;
       background: rgba(15,23,42,.04);
       border:1px dashed rgba(15,23,42,.14);
       min-height:28px;
@@ -277,7 +272,7 @@
     }
 
     .solLine{
-      font-size:11px;
+      font-size:10.5px;
       color: var(--muted);
       font-weight:800;
       display:none;
@@ -295,39 +290,39 @@
     .pairsWrap{
       display:flex;
       flex-direction:column;
-      gap:8px;
+      gap:6px;
       min-height:0;
     }
     .pairsGrid{
       display:grid;
       grid-template-columns: repeat(2, 1fr);
-      gap:8px;
+      gap:6px;
       min-height:0;
     }
     .pairCard{
       border:2px solid #111;
-      border-radius: 14px;
+      border-radius: 12px;
       background:#fff;
-      padding:7px;
+      padding:6px;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:8px;
+      gap:6px;
       user-select:none;
       position:relative;
-      min-height:52px;
+      min-height:48px;
       touch-action:none;
     }
     .pairSlots{
       display:flex;
-      gap:8px;
+      gap:6px;
       align-items:center;
       flex:1;
       min-width:0;
     }
     .pairSlot{
-      width:34px; height:34px;
-      border-radius: 12px;
+      width:30px; height:30px;
+      border-radius: 11px;
       background: #fff;
       border:1px dashed rgba(15,23,42,.20);
       display:grid;
@@ -354,12 +349,12 @@
       flex:0 0 auto;
     }
     .mark{
-      width:22px;height:22px;
-      border-radius: 9px;
+      width:20px;height:20px;
+      border-radius: 8px;
       display:grid;
       place-items:center;
       font-weight:1000;
-      font-size:12px;
+      font-size:11px;
       border:1px solid rgba(15,23,42,.12);
       background: var(--chip);
       color: rgba(15,23,42,.5);
@@ -385,13 +380,13 @@
     .numsGrid{
       display:grid;
       grid-template-columns: repeat(8, 1fr);
-      gap:8px;
+      gap:6px;
     }
     .numTok{
       border:2px solid #111;
-      border-radius: 14px;
+      border-radius: 12px;
       background:#fff;
-      min-height:40px;
+      min-height:36px;
       display:grid;
       place-items:center;
       font-weight:1000;
@@ -508,7 +503,7 @@
       background: linear-gradient(135deg, rgba(15,23,42,.04), rgba(15,23,42,.02));
       border:1px solid rgba(15,23,42,.08);
       box-shadow: var(--shadow);
-      font-size:12px;
+      font-size:11px;
       color: rgba(15,23,42,.78);
       text-align:center;
       display:flex;
@@ -570,7 +565,6 @@
       <!-- GRID -->
       <div class="panel">
         <div class="panelHead">
-          <div class="title" id="gridTitle">Grilla</div>
           <div class="progress" id="progressText">0/16</div>
         </div>
 
@@ -582,8 +576,7 @@
       <!-- PAIRS -->
       <div class="panel pairsWrap">
         <div class="panelHead">
-          <div class="title" id="pairsTitle">Pares</div>
-          <div class="progress" style="display:flex; gap:8px; align-items:center;">
+          <div class="progress" style="display:flex; gap:6px; align-items:center;">
             <span class="mark add on">+</span>
             <span class="mark mul on">×</span>
           </div>
@@ -595,7 +588,6 @@
       <!-- NUMBERS -->
       <div class="panel">
         <div class="panelHead">
-          <div class="title" id="numsTitle">Números</div>
           <div class="progress" id="numsHint"></div>
         </div>
         <div class="numsGrid" id="numsGrid"></div>
@@ -742,6 +734,7 @@
     const toastEl = document.getElementById("toast");
 
     let reveal = false;
+    let hasWon = false;
 
     const S = {
       difficulty: 5, // cantidad de huecos (0 = más fácil)
@@ -831,6 +824,7 @@
       S.grid  = Array.from({length:16}, ()=>({cardId:null, op:null}));
 
       reveal = false;
+      hasWon = false;
       btnReveal.classList.remove("toggleOn");
 
       renderAll();
@@ -930,10 +924,6 @@
       btnHelp.title = t("help");
       helpTitle.textContent = t("help");
       helpBody.innerHTML = t("helpBody");
-
-      document.getElementById("gridTitle").textContent = t("grid");
-      document.getElementById("pairsTitle").textContent = t("pairs");
-      document.getElementById("numsTitle").textContent = t("nums");
 
       miniHint.textContent = t("hint");
 
@@ -1179,24 +1169,28 @@
       // 1) blanks filled
       for(let i=0;i<16;i++){
         if(S.strip[i].isBlank && stripValueAt(i)===null){
+          hasWon = false;
           if(showToasts) toast(t("toastMissing"));
           return false;
         }
       }
       // 2) strip ascending
       if(!orderOK()){
+        hasWon = false;
         if(showToasts) toast(t("toastStripOrder"));
         return false;
       }
       // 3) pair cards full (16 slots)
       const filledPairSlots = S.cards.reduce((acc,c)=> acc + (c.a!==null?1:0) + (c.b!==null?1:0), 0);
       if(filledPairSlots < 16){
+        hasWon = false;
         if(showToasts) toast(t("needFill"));
         return false;
       }
       // 4) grid complete
       const filledGrid = S.grid.filter(g=>g.cardId!==null && g.op!==null).length;
       if(filledGrid < 16){
+        hasWon = false;
         if(showToasts) toast(t("toastMissing"));
         return false;
       }
@@ -1205,6 +1199,7 @@
         const target = S.solution.cells[i].target;
         const computed = gridComputed(i);
         if(computed !== target){
+          hasWon = false;
           if(showToasts) toast(t("statusErr"));
           return false;
         }
@@ -1213,6 +1208,7 @@
       const usage = cardUsage();
       const okUsage = usage.every(u=>u.add===1 && u.mul===1);
       if(!okUsage){
+        hasWon = false;
         if(showToasts) toast(t("statusErr"));
         return false;
       }
@@ -1220,7 +1216,10 @@
       // WIN
       setStatus(t("statusWin"));
       if(showToasts) toast(t("toastWin"));
-      confettiBurst();
+      if(!hasWon){
+        confettiBurst();
+        hasWon = true;
+      }
       return true;
     }
 
