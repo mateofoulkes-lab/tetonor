@@ -575,13 +575,6 @@
 
       <!-- PAIRS -->
       <div class="panel pairsWrap">
-        <div class="panelHead">
-          <div class="progress" style="display:flex; gap:6px; align-items:center;">
-            <span class="mark add on">+</span>
-            <span class="mark mul on">×</span>
-          </div>
-        </div>
-
         <div class="pairsGrid" id="pairsGrid"></div>
       </div>
 
@@ -741,7 +734,7 @@
       strip: [],     // [{value:number|null, isBlank:boolean}]
       stripGuess: Array(16).fill(null),
       // pair cards: 8 cards, each slot stores stripIdx or null
-      cards: Array.from({length:8}, ()=>({a:null,b:null})),
+      cards: Array.from({length:8}, ()=>({a:null,b:null,lastSlot:null})),
       // grid: 16 cells, each has cardId or null + op null/+/*
       grid: Array.from({length:16}, ()=>({cardId:null, op:null})),
       // hidden solution (solo para mostrar cuando reveal ON)
@@ -820,7 +813,7 @@
 
       S.strip = maskStrip(fullStrip, S.difficulty);
       S.stripGuess = Array(16).fill(null);
-      S.cards = Array.from({length:8}, ()=>({a:null,b:null}));
+      S.cards = Array.from({length:8}, ()=>({a:null,b:null,lastSlot:null}));
       S.grid  = Array.from({length:16}, ()=>({cardId:null, op:null}));
 
       reveal = false;
@@ -1054,7 +1047,7 @@
             if(now - lastTap < 320){
               // double tap
               if(S.cards[c][which]!==null){
-                S.cards[c][which]=null;
+                clearCardSlot(c, which);
                 renderAll();
               }
             }
@@ -1062,11 +1055,14 @@
           });
           slot.addEventListener("dblclick", ()=>{
             if(S.cards[c][which]!==null){
-              S.cards[c][which]=null;
+              clearCardSlot(c, which);
               renderAll();
             }
           });
         });
+
+        // Drop target on full card for auto-slotting
+        attachDropPairCard(card, c);
 
         // Drag card -> grid cell (touch + mouse)
         attachDragCard(card);
@@ -1128,12 +1124,8 @@
           <div class="solLine">${solLine}</div>
         `;
 
-        // Tap cycles op: null -> + -> x -> null
+        // Tap cycles op: null -> + -> x -> null (even if no card placed yet)
         cell.addEventListener("click", ()=>{
-          if(g.cardId===null){
-            toast(t("toastNeedCard"));
-            return;
-          }
           if(g.op===null) g.op="+";
           else if(g.op==="+") g.op="x";
           else g.op=null;
@@ -1366,6 +1358,19 @@
       });
     }
 
+    function attachDropPairCard(card, cardId){
+      card.addEventListener("dragover",(e)=>{ e.preventDefault(); });
+      card.addEventListener("drop",(e)=>{
+        e.preventDefault();
+        const raw = e.dataTransfer.getData("text/plain") || "";
+        if(raw.startsWith("token:")){
+          const stripIdx = parseInt(raw.slice(6),10);
+          const slot = nextSlotForCard(cardId);
+          assignTokenToSlot(stripIdx, cardId, slot);
+        }
+      });
+    }
+
     function attachDragCard(card){
       const cardId = parseInt(card.dataset.cardId,10);
 
@@ -1436,11 +1441,38 @@
       });
     }
 
+    function nextSlotForCard(cardId){
+      const c = S.cards[cardId];
+      if(c.a===null) return "a";
+      if(c.b===null) return "b";
+      return c.lastSlot ?? "b";
+    }
+
+    function setCardSlot(cardId, which, stripIdx){
+      const c = S.cards[cardId];
+      c[which] = stripIdx;
+      c.lastSlot = which;
+    }
+
+    function clearCardSlot(cardId, which){
+      const c = S.cards[cardId];
+      c[which] = null;
+      if(c.a!==null && c.b!==null){
+        c.lastSlot = which === "a" ? "b" : "a";
+      }else if(c.a!==null){
+        c.lastSlot = "a";
+      }else if(c.b!==null){
+        c.lastSlot = "b";
+      }else{
+        c.lastSlot = null;
+      }
+    }
+
     function assignTokenToSlot(stripIdx, cardId, which){
       if(stripValueAt(stripIdx)===null){ toast(t("toastNeedNumber")); return; }
       if(stripTokenUsed(stripIdx)){ toast(t("toastTokenUsed")); return; }
 
-      S.cards[cardId][which] = stripIdx;
+      setCardSlot(cardId, which, stripIdx);
       renderAll();
     }
 
@@ -1448,7 +1480,7 @@
     function highlightDropTargets(kind){
       clearHot();
       if(kind==="token"){
-        document.querySelectorAll(".pairSlot").forEach(el=>el.classList.add("dropTarget"));
+        document.querySelectorAll(".pairSlot, .pairCard").forEach(el=>el.classList.add("dropTarget"));
       }else{
         document.querySelectorAll(".cell").forEach(el=>el.classList.add("dropTarget"));
       }
@@ -1473,7 +1505,9 @@
 
       if(drag?.type==="token"){
         const slot = el.closest(".pairSlot");
+        const card = el.closest(".pairCard");
         if(slot) slot.classList.add("dropHot");
+        else if(card) card.classList.add("dropHot");
       }else if(drag?.type==="card"){
         const cell = el.closest(".cell");
         if(cell) cell.classList.add("dropHot");
@@ -1485,12 +1519,11 @@
       if(!el) return;
 
       if(drag.type==="token"){
-        const slot = el.closest(".pairSlot");
-        if(!slot) return;
-        const cardEl = slot.closest(".pairCard");
+        const cardEl = el.closest(".pairCard");
         if(!cardEl) return;
         const cardId = parseInt(cardEl.dataset.cardId,10);
-        const which = slot.getAttribute("data-slot");
+        const slotEl = el.closest(".pairSlot");
+        const which = slotEl ? slotEl.getAttribute("data-slot") : nextSlotForCard(cardId);
         assignTokenToSlot(drag.stripIdx, cardId, which);
       }else if(drag.type==="card"){
         const cell = el.closest(".cell");
