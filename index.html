@@ -871,18 +871,30 @@
         </div>
       `;
       const tokensEl=document.getElementById("simpleTokens");
+      const usage=simpleUsage();
       SIMPLE.puzzle.tokens.forEach(tok=>{
         const el=document.createElement("div");
         el.className="stripTok";
         el.draggable=true;
         el.dataset.tokenId=String(tok.id);
+        const u=usage[tok.id];
+        const addClass = `mark add ${u.add>0?"":"off"} ${u.add>1?"over":""}`;
+        const mulClass = `mark mul ${u.mul>0?"":"off"} ${u.mul>1?"over":""}`;
+        const fullyUsed = (u.add===1 && u.mul===1);
+        if(fullyUsed) el.style.opacity="0.55";
         el.addEventListener("dragstart",(e)=>{
           e.dataTransfer.clearData();
           e.dataTransfer.setData(DRAG_TOKEN, el.dataset.tokenId);
           e.dataTransfer.setData("text/plain", el.dataset.tokenId);
           e.dataTransfer.effectAllowed="copy";
         });
-        el.innerHTML = `${tok.value}`;
+        el.innerHTML = `
+          <div class="chip">${tok.value}</div>
+          <div class="marks">
+            <span class="${addClass}">+</span>
+            <span class="${mulClass}">×</span>
+          </div>
+        `;
         tokensEl.appendChild(el);
       });
     }
@@ -1438,23 +1450,9 @@
         }
       }
 
-      // 8) pares correctos vs solución (comparando sets por card)
-      // Convertimos cada par a firma "minIdx-maxIdx" para comparar multiconjunto
-      const solSigs = ADV.puzzle.solution.solPairs
-        .map(([a,b])=> a<b ? `${a}-${b}` : `${b}-${a}`)
-        .sort();
-      const userSigs = ADV.state.pairCards
-        .map(c=>{
-          const a=c.a, b=c.b;
-          const x = a<b ? `${a}-${b}` : `${b}-${a}`;
-          return x;
-        })
-        .sort();
-      const okPairs = solSigs.every((s,i)=>s===userSigs[i]);
-
-      if(okCells && okUsage && okBlanks && okPairs){
+      if(okCells && okUsage && okBlanks){
         showToast(t("toastPerfect"));
-        statusEl.innerHTML = `<span class="ok"><strong>${LANG==="es"?"Correcto":"Correct"}:</strong> ${LANG==="es"?"grilla OK, pares OK, huecos OK":"grid OK, pairs OK, blanks OK"}.</span>`;
+        statusEl.innerHTML = `<span class="ok"><strong>${LANG==="es"?"Correcto":"Correct"}:</strong> ${LANG==="es"?"grilla OK, huecos OK, usos OK":"grid OK, blanks OK, usage OK"}.</span>`;
         confettiBurst();
       }else{
         showToast(t("toastErrors"));
@@ -1462,7 +1460,6 @@
         if(!okCells) d.push(LANG==="es"?"alguna celda no coincide":"some cell doesn't match");
         if(!okUsage) d.push(LANG==="es"?"uso de tarjetas incorrecto":"card usage is wrong");
         if(!okBlanks) d.push(LANG==="es"?"algún hueco está mal":"a blank is wrong");
-        if(!okPairs) d.push(LANG==="es"?"los pares armados no coinciden":"built pairs don't match");
         statusEl.innerHTML = `<span class="err"><strong>${LANG==="es"?"Incorrecto":"Incorrect"}:</strong> ${d.join(LANG==="es"?" y ":" and ")}.</span>`;
       }
     }
