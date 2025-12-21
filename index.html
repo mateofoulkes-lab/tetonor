@@ -303,26 +303,19 @@
       border:2px solid #111;
       border-radius: 12px;
       background:#fff;
-      padding:6px;
-      display:flex;
+      padding:6px 8px;
+      display:grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items:center;
-      justify-content:space-between;
-      gap:6px;
+      gap:10px;
       user-select:none;
       position:relative;
-      min-height:48px;
+      min-height:56px;
       touch-action:none;
     }
-    .pairSlots{
-      display:flex;
-      gap:6px;
-      align-items:center;
-      flex:1;
-      min-width:0;
-    }
     .pairSlot{
-      width:30px; height:30px;
-      border-radius: 11px;
+      width:100%; height:36px;
+      border-radius: 14px;
       background: #fff;
       border:1px dashed rgba(15,23,42,.20);
       display:grid;
@@ -337,20 +330,25 @@
       border-style:solid;
       background: var(--chip);
     }
-    .pairSep{
-      font-weight:1000;
-      color: rgba(15,23,42,.45);
+    .pairOps{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      align-items:center;
+      justify-content:center;
+      min-width:0;
+      width:32px;
     }
-
     .marks{
       display:flex;
+      flex-direction:column;
       gap:6px;
       align-items:center;
       flex:0 0 auto;
     }
     .mark{
-      width:20px;height:20px;
-      border-radius: 8px;
+      width:24px;height:24px;
+      border-radius: 10px;
       display:grid;
       place-items:center;
       font-weight:1000;
@@ -430,6 +428,10 @@
     }
     .dropHot{
       box-shadow: 0 0 0 3px rgba(15,23,42,.18) inset;
+    }
+    .pairCard.dropHot{
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,.18) inset;
     }
 
     /* Toast */
@@ -1024,15 +1026,14 @@
         const bVal = (bIdx===null) ? null : stripValueAt(bIdx);
 
         card.innerHTML = `
-          <div class="pairSlots">
-            <div class="pairSlot ${aIdx!==null ? "filled":""}" data-slot="a">${aVal??""}</div>
-            <div class="pairSep">·</div>
-            <div class="pairSlot ${bIdx!==null ? "filled":""}" data-slot="b">${bVal??""}</div>
+          <div class="pairSlot ${aIdx!==null ? "filled":""}" data-slot="a">${aVal??""}</div>
+          <div class="pairOps">
+            <div class="marks">
+              <div class="mark add ${addOn?"on":""} ${usage[c].add>1?"over":""}">+</div>
+              <div class="mark mul ${mulOn?"on":""} ${usage[c].mul>1?"over":""}">×</div>
+            </div>
           </div>
-          <div class="marks">
-            <div class="mark add ${addOn?"on":""} ${usage[c].add>1?"over":""}">+</div>
-            <div class="mark mul ${mulOn?"on":""} ${usage[c].mul>1?"over":""}">×</div>
-          </div>
+          <div class="pairSlot ${bIdx!==null ? "filled":""}" data-slot="b">${bVal??""}</div>
         `;
 
         // Drop target for tokens on each slot
@@ -1042,7 +1043,8 @@
 
           // FIX #5: doble click / doble tap en la tarjeta => desvincula
           let lastTap=0;
-          slot.addEventListener("click", ()=>{
+          slot.addEventListener("click", (e)=>{
+            e.stopPropagation();
             const now = Date.now();
             if(now - lastTap < 320){
               // double tap
@@ -1053,12 +1055,26 @@
             }
             lastTap = now;
           });
-          slot.addEventListener("dblclick", ()=>{
+          slot.addEventListener("dblclick", (e)=>{
+            e.stopPropagation();
             if(S.cards[c][which]!==null){
               clearCardSlot(c, which);
               renderAll();
             }
           });
+        });
+
+        // Double tap/click on card clears both slots
+        let lastCardTap = 0;
+        card.addEventListener("click", (e)=>{
+          const now = Date.now();
+          if(now - lastCardTap < 320){
+            if(clearCardSlots(c)) renderAll();
+          }
+          lastCardTap = now;
+        });
+        card.addEventListener("dblclick", (e)=>{
+          if(clearCardSlots(c)) renderAll();
         });
 
         // Drop target on full card for auto-slotting
@@ -1466,6 +1482,14 @@
       }else{
         c.lastSlot = null;
       }
+    }
+
+    function clearCardSlots(cardId){
+      const c = S.cards[cardId];
+      const had = (c.a!==null || c.b!==null);
+      if(c.a!==null) clearCardSlot(cardId, "a");
+      if(c.b!==null) clearCardSlot(cardId, "b");
+      return had;
     }
 
     function assignTokenToSlot(stripIdx, cardId, which){
