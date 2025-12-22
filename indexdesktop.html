@@ -335,6 +335,11 @@
       grid-template-columns: repeat(4, 1fr);
       gap:10px;
     }
+    .stripGridsimple{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:25px;
+    }
     @media (max-width:520px){
       .stripGrid{ gap:8px; }
     }
@@ -866,7 +871,7 @@
         </div>
         <div class="panelWrap">
           <div class="section">
-            <div class="stripGrid" id="simpleTokens"></div>
+            <div class="stripGridsimple" id="simpleTokens"></div>
           </div>
         </div>
       `;
@@ -881,7 +886,7 @@
         const addClass = `mark add ${u.add>0?"":"off"} ${u.add>1?"over":""}`;
         const mulClass = `mark mul ${u.mul>0?"":"off"} ${u.mul>1?"over":""}`;
         const fullyUsed = (u.add===1 && u.mul===1);
-        if(fullyUsed) el.style.opacity="0.55";
+        if(fullyUsed) el.style.opacity="0.2";
         el.addEventListener("dragstart",(e)=>{
           e.dataTransfer.clearData();
           e.dataTransfer.setData(DRAG_TOKEN, el.dataset.tokenId);
