@@ -1358,12 +1358,10 @@
         });
 
         cell.addEventListener("click", ()=>{
-          if(s.cardId===null){ showToast(t("toastNeedPair")); return; }
           s.op="x"; renderAll();
         });
         cell.addEventListener("contextmenu",(e)=>{
           e.preventDefault();
-          if(s.cardId===null){ showToast(t("toastNeedPair")); return; }
           s.op="+"; renderAll();
         });
         cell.addEventListener("dblclick", ()=>{
